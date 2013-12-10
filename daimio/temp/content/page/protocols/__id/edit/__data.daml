@@ -1,0 +1,2 @@
+{%page/protocols/__id/__data}
+{protoquestion find | > :pqs}

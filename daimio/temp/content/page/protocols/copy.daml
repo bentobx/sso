@@ -1,0 +1,30 @@
+<a href="{@SITE.path}/protocols/add">Add a new protocol</a>
+
+{begin pfams | merge with @pfams}
+  <div>
+    <h3>{name} <em>({square})</em></h3>
+    <ul>
+      {begin protocols | merge with @protocols.{_id}.items}
+        <li>
+          <p>
+            <a href="{@SITE.path}/protocols/{_id}">{nickname}</a> 
+            <em>({square})</em> 
+            
+            <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+              <input type="submit" name="submit" value="Clone">
+              <input type="hidden" name="protocol_id" value="{_id}">
+              <input type="hidden" name="nickname" value="{nickname} clone">
+              <textarea name="commands" style="display:none">
+                {begin verbatim | process escape}
+                  {protocol replicate id #protocol_id nickname #nickname | > :new_pid}
+            		  {page redirect to {"protocols/{@new_pid}/edit"} }
+                {end verbatim}
+              </textarea>
+            </form>
+            
+          </p>					
+        </li>
+      {end protocols}
+    </ul>
+  </div>
+{end pfams}

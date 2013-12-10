@@ -1,0 +1,6 @@
+<h1>Studies</h1>
+<a href="{@SITE.path}/studies/add">Add a new study</a>
+
+{begin studies | merge with @studies}
+  <p><a href="{@SITE.path}/admin/studies/{_id}">{name}</a></p>
+{end studies}

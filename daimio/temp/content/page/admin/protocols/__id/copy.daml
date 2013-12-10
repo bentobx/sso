@@ -1,0 +1,7 @@
+{begin protocol | merge with (@protocol)}
+<h1>Protocol: {nickname}</h1>
+<p>Nickname: {nickname}</p>
+<p>Family: {protocol find_families by_ids family | __.#1 | __.name}</p>
+<p>Status: {square}</p>
+<p><a href="{@SITE.path}/admin/protocols/{_id}/edit">Edit this protocol</a></p>
+{end protocol}

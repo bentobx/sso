@@ -1,0 +1,8 @@
+{%page/studies/__id/__data}
+
+{// NOTE: most users won't have {user pick} available, but we can use {member find} instead //}
+{/user pick where "id %= ({@study.users | array to_csv})" | > :participants}
+
+
+{"
+" | > :newline} {// THINK: this is a very silly way to include a newline... //}

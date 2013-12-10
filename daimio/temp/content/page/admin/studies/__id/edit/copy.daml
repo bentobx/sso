@@ -1,0 +1,40 @@
+{begin details | merge with (@study)}
+<h1>Editing {name}</h1>
+<hr/>
+<form method="post">
+  <div>
+    <label for="name">Study name</label>
+    <div>
+      <input type="text" id="studyname" name="studyname" value="{name}">
+    </div>
+  </div>
+  <div>
+    <p>Protocol: {@pfam.name}</label>
+    {// NOTE: the protocol is published by this point, so it's uneditable //}
+    {// <a href="{@SITE.path}/protocols/{@protocol._id}/edit">(Edit)</a> //}
+  </div>
+  <div>
+    <label for="participants">Participants, separated by newline</label><br/>
+    <!-- This totally adds a bunch of extra space! I don't know how to make it not do that! -->
+    <textarea name="participants">{users | member find | __.depot.email | string join with @newline}</textarea>
+  </div>
+  
+  <input type="hidden" id="s_id" name="s_id" value="{_id}">
+  <input type="submit" value="Save changes"/>
+  
+  <textarea name="commands" style="display:none;">
+    {begin verbatim | process escape}
+      {study set_name id #s_id value #studyname}
+      
+      {"
+" | > :newline} {// yes, this is very silly //}
+
+      { string split value #participants on @newline
+      | foreach string "{member create_from_email email value | >> :addys}"
+      | @addys | study set_users id #s_id }
+
+      {page redirect to {"studies/{#s_id}"} }
+    {end verbatim}
+  </textarea>
+</form>  
+{end details}

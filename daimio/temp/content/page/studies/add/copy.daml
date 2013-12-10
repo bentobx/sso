@@ -1,0 +1,42 @@
+<h1>Add a new study</h1>
+
+<form method="post">
+  <div>
+    <label for="studyname">Name</label>
+    <input type="text" id="studyname" name="studyname"/>
+  </div>
+  
+  <div>
+    <label for="protocol">Protocol</label>
+    <select name="pfam" id="pfam">
+      {begin pfams | merge with @pfams}
+        <option value="{_id}">{name}</option>
+      {end pfams}
+    </select>
+  </div>
+  
+  <div>
+    <label for="participants">Participants (enter email addresses, separated by a comma)</label><br/>
+    <textarea name="participants">
+    </textarea>
+  </div>
+  
+  <input type="submit" value="Save study">
+  
+  <textarea name="commands" style="display:none;">
+    {begin verbatim | process escape}
+      {protocol find by_family #pfam by_square :published | __.#1._id | > :protocol_id}
+
+      {study add protocol @protocol_id | study set_name value #studyname | > :study_id}
+      
+      {"
+" | > :newline} {// yes, this is very silly //}
+
+      { string split value #participants on @newline
+      | foreach string "{member create_from_email email value | >> :addys}"
+      | @addys | study set_users id @study_id }
+      
+      {page redirect to {"studies/{@study_id}"} }
+    {end verbatim}
+  </textarea>
+</form>

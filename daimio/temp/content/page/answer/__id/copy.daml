@@ -1,0 +1,29 @@
+<h1>Riddle me this</h1>
+
+{begin alldone | if {@first_q | not}}
+  <h2>You have answered all available questions</h2>
+{end alldone}
+
+
+{begin todo | if @first_q}
+  <h2>{@first_pq.public.text}</h2>
+
+  <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+
+    <select name="choice" id="choice">
+      {begin choices | foreach with @first_pq.public.choices}
+        <option value="{key}">{value}</option>
+      {end choices}
+    </select>
+
+    <input type="submit" name="submit" value="Choose">
+    <input type="hidden" name="qid" value="{@first_q._id}">
+
+    <textarea name="commands" style="display:none">
+      {begin verbatim | process escape}
+        {answer add question #qid input #choice}
+      {end verbatim}
+    </textarea>
+
+  </form>
+{end todo}

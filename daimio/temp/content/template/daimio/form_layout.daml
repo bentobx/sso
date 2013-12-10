@@ -1,0 +1,26 @@
+{begin default_form_commands}
+  {if {not @goto.page} then "{@SITE.url | > :goto.page}"}
+  {if {data input form :{form_keyword} row #row_id values @POST}
+   then "{notice set value "Saved!"}{page redirect to @goto.page}"
+  }
+{end default_form_commands}
+
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  {begin error | @ERRORS.forms.{form_keyword}.*  | then "{foreach string $error with @ERRORS.forms.{form_keyword}.*}"}
+  <div class="error">{value}</div>
+  {end error}
+
+  {begin field_html | foreach with fields}
+  {value.wrapped_html}
+  {end field_html}
+
+  <input type="submit" name="submit" id="submit" value="Submit" class="button"   />
+  
+  <input type="hidden" name="row_id" value="{row_id}" />
+  
+  <textarea name="commands" style="display:none">
+  {$replacement_form_commands | else $default_form_commands | sub with form_keyword as :form_keyword | process escape}
+  </textarea>
+
+</form>

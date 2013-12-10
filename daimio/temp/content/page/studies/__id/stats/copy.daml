@@ -1,0 +1,18 @@
+<h1>Coming soon</h1>
+
+<h2>{@study.name}</h2>
+
+{begin questions | merge with @pqs}
+  <h3>{public.text}</h3>
+  
+  { @qs | extract "{this.pq | is like _id}" | > :myqs 
+  | @as | extract "{this.question | is in @myqs._id}" | > :myas 
+  | "" }
+  
+  {begin choices | foreach with public.choices}
+    <p>
+      {value}: {@myas | extract "{this.input | is like key}" | array count}
+    </p>
+  {end choices}
+  
+{end questions}

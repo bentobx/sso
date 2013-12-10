@@ -1,0 +1,47 @@
+<h1>Add a Protocol</h1>
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <div>
+    <div>
+      <label for="famname">Name</label>
+      <div>
+        <input type="text" id="famname" name="famname" value="meetings">
+      </div>
+    </div>
+  </div>
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      {protocol add_family name #famname}
+    {end verbatim}
+  </textarea>
+  <input type="submit" value="Add Protocol">
+</form>
+
+
+<h1>Create a new version for an existing protocol</h1>
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <div>
+    <label for="pfam">Protocol</label>
+    <select name="pfam" id="pfam">
+      {begin families | merge with @pfams}
+        <option value="{_id}">{shortname}</option>
+      {end families}
+    </select>
+  </div>
+  
+  <div>
+    <label for="name">Version nickname</label>
+    <input type="text" id="nickname" name="nickname" value="">
+  </div>
+  
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      {protocol add family #pfam nickname #nickname | > :pfam}
+      {page redirect to {"admin/protocols/{@pfam}/edit"} }
+    {end verbatim}
+  </textarea>
+  <input type="submit" value="Add Version">  
+</form>
+
+

@@ -1,0 +1,13 @@
+{%page/studies/__id/__data}
+
+{@study.test | test find | __.#1 | > :test}
+{@test._id | test find_questions | > :qs}
+{@test._id | test find_answers | > :as}
+{@qs.pq | protoquestion find | > :pqs}
+{@study.protocol | protocol find | __.#1 | > :protocol}
+
+{// find all *unanswered* questions... //}
+{@as.question | > :answered | @qs | prune "{this._id | is in @answered}" | __._id | > :unanswered}
+
+{@qs.{@unanswered.#1} | mongous sanitize | > :first_q}
+{@pqs.{@first_q.pq} | > :first_pq}

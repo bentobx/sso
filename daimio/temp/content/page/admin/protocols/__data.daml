@@ -1,0 +1,5 @@
+{protocol find_families | mongous sanitize | > :pfams}
+
+{ protocol find | mongous sanitize 
+| array organize command "stack:family"
+| > :protocols}

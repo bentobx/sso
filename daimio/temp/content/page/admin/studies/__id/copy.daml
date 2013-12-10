@@ -1,0 +1,27 @@
+{begin details | merge with (@study)}
+  <h1>{name}</h1>
+  <hr/>
+  <p>Name: {name}</p>
+  <p>Protocol: {@pfam.name}</p>
+  <p>Participants:</p>
+  <ul>
+    {begin participants | merge with {users | member find}}
+      <li>{depot.email}</li>
+    {end participants}
+  </ul>  
+  
+  <hr/>
+  <p><a href="{@SITE.path}/admin/studies/{_id}/edit">Edit this study</a></p>
+  <p><a href="{@SITE.path}/admin/studies/{_id}/stats">Stats</a></p>
+  
+  <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+    <input type="submit" name="submit" value="Distribute questions">
+    <input type="hidden" name="study_id" value="{_id}">
+    <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      {study distribute id #study_id}
+    {end verbatim}
+    </textarea>
+  </form>
+  
+{end details}

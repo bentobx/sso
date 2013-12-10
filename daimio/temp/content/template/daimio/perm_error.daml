@@ -1,0 +1,62 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>Permission Denied</title>
+  {begin verbatim | process escape}
+    <style>
+      font-size: 62.5%;
+      font-family: Helvetica, Helvetica Neue, Arial, Tahoma, sans-serif;
+      text-align: center;
+      background-color: #eee;
+      background-repeat: repeat-x;
+
+      #container
+      {
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      #dialog
+      {
+        background-color: #fff;
+        padding: 3em;
+        border: solid 2px #ccc;
+      }
+
+      p {
+        color: #444;
+        font-size: 16px
+      }
+
+      dt, dd {
+        margin: 0 auto;
+        font-size: 12px;
+        line-height: 24px;
+        color: #666;
+        margin-left: 80px;
+      }
+      a {
+        font-size: 18px;
+      }
+      h1 {
+        color: #333;
+        padding: 0;  font-size: 24px
+      }
+    </style>
+  {end verbatim} 
+</head>
+
+<body>
+  <div id="container"> 
+    <div id="dialog">
+      <h1>Permission Denied</h1>
+
+      <p class="message">
+        I'm afraid you haven't sufficient privileges to access that page. Please upgrade your permission level and try again.
+        <a href="{@SITE.path}">Return to home page.</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

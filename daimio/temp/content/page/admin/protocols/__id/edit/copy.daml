@@ -1,0 +1,171 @@
+<h1>Edit</h1>
+<p>Here is where you can edit your protocol.</p>
+<p><a href="{@SITE.path}/admin/protocols">back</a></p>
+
+{begin protocol | merge with (@protocol)}
+  <p>Nickname: {nickname}</p>
+  <p>Family: {protocol find_families by_ids family | __.#1 | __.name}</p>
+  <p>Status: {square}</p>
+  <p>Questions:</p>
+  <ul>
+    {begin questions | merge with q_list}
+      {protoquestion find by_ids pq | __.#1 | > :pq | ""}
+      <li>
+        {@pq.public.text}
+        
+        <form method="post">
+          <input type="hidden" name="p_id" value="{_id}">
+          <input type="hidden" name="index" value="{@count | +: 1 | > :count | -: 1}">
+          <input type="submit" value="Remove question">
+          <textarea name="commands" style="display:none;">
+            {begin verbatim | process escape}
+              {protocol remove_question id #p_id index #index}
+            {end verbatim}
+          </textarea>
+        </form>
+        
+      </li>
+    {end questions}
+  </ul>
+
+  {begin draft | if {square | is like :draft}}
+  <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+    <input type="hidden" name="p_id" id="p_id" value="{_id}">
+    <input type="submit" value="Publish"/>
+    <textarea name="commands" style="display:none">
+      {begin verbatim | process escape}
+        {protocol sandbox id #p_id | protocol publish}
+      {end verbatim}
+    </textarea>
+  </form>
+  {end draft}
+{end protocol}
+
+<h1>Add an existing question</h1>
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <div>
+    {@pqs | prune "{this._id | is in {@protocol.q_list | mongous sanitize | __.pq}}" | > :unused_pqs | ""}
+    
+    <select name="pq" id="pq">
+      {begin pqs | merge with @unused_pqs}
+        <option value="{_id}">{public.text | string truncate length 40}</option>
+      {end pqs}
+    </select>
+  </div>
+  
+  <input type="hidden" name="p_id" value="{@protocol._id}">
+  <input type="submit" value="Add question">
+  <textarea name="commands" style="display:none;">
+    {begin verbatim | process escape}
+      {protocol add_question id #p_id pq #pq pdata {* (:label pq.#1)} }
+      {// NOTE: this filters out duplicates by not including a real label //}
+    {end verbatim}
+  </textarea>
+</form>
+
+<h1>Create a new question</h1>
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <div>
+    <div>
+      <label for="name">Question</label>
+      <div>
+        <textarea id="pubtext" name="pubtext"></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <div>
+    <div>
+      <label for="name">Choices</label>
+      <div>
+        <input type="text" id="option1" name="option1" value="Yes"><br/>
+        <input type="text" id="option2" name="option2" value="No"><br/>
+        <input type="text" id="option3" name="option3" value=""><br/>
+        <input type="text" id="option4" name="option4" value=""><br/>
+      </div>
+    </div>
+  </div>
+  
+  <input type="hidden" name="p_id" value="{@protocol._id}">
+  <input type="submit" value="Add question">
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      {(#option1 #option2 #option3 #option4) | extract "{this}" | > :choices}
+      { protoquestion add shortname #pubtext type :multiple_choice 
+          public {* (:text #pubtext :choices @choices)} 
+          private {* (:scores (1 2 3 4))} 
+      | > :pq1}  {// NOTE: the score values aren't really used //}
+      {protocol add_question id #p_id pq @pq1 pdata {* (:label pq.#1)} }
+    {end verbatim}
+  </textarea>
+</form>
+
+
+
+
+{// 
+
+NOTE: retaining this section for future reference -- remove if we decide we'll never need other qtypes
+  
+  
+<h1>Create a new question</h1>
+
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <div>
+    <div>
+      <label for="name">Question name</label>
+      <div>
+        <input type="text" id="shortname" name="shortname" value="">
+      </div>
+    </div>
+  </div>
+  
+  <div>
+    <div>
+      <label for="name">Type</label>
+      <select name="qtype" id="qtype">
+        <option value="date">Date</option>
+        <option value="file_upload">File Upload</option>
+        <option value="key_value_list">Item list</option>
+        <option value="mc_plus_ultra">Multiple choice with text field</option>
+        <option value="multiple_choice">Multiple choice</option>
+        <option value="numeric">Numeric</option>
+        <option value="text">Text</option>
+        <option value="yearly_numeric">Yearly numeric</option>
+        <option value="yearly_text">Yearly text</option>
+      </select>
+    </div>
+  </div>
+  
+  <div>
+    <div>
+      <label for="name">Display text</label>
+      <div>
+        <input type="text" id="pubtext" name="pubtext" value="">
+      </div>
+    </div>
+  </div>
+  
+  <div>
+    <div>
+      <label for="name">Choices</label>
+      <div>
+        <input type="text" id="option1" name="option1" value=""><br/>
+        <input type="text" id="option2" name="option2" value=""><br/>
+        <input type="text" id="option3" name="option3" value=""><br/>
+        <input type="text" id="option4" name="option4" value=""><br/>
+      </div>
+    </div>
+  </div>
+  
+  <input type="hidden" name="p_id" value="{@protocol._id}">
+  <input type="submit" value="Add question">
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      {protoquestion add shortname #shortname type #qtype public {* (:text #pubtext :choices (#option1 #option2 #option3 #option4))} | > :pq1}
+      {protocol add_question id #p_id pq @pq1 pdata {* (:label pq.#1)} }
+    {end verbatim}
+  </textarea>
+</form> //}

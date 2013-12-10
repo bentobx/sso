@@ -1,0 +1,2 @@
+{study find by_ids #id | __.#1 | > :study}
+{protocol find_families by_protocols @study.protocol | __.#1 | > :pfam}

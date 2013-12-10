@@ -1,0 +1,7 @@
+{%page/studies/__id/__data}
+
+{@study.test | test find | __.#1 | > :test}
+{@test._id | test find_questions | > :qs}
+{@test._id | test find_answers | > :as}
+{@qs.pq | protoquestion find | > :pqs}
+{@study.protocol | protocol find | __.#1 | > :protocol}

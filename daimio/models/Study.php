@@ -192,6 +192,38 @@ class Study
   }  
   
   /** 
+  * Special-purpose version of "distribute" for SSO. Distributes all questions in the study to a single user. 
+  * @param string
+  * @param string 
+  * @return string 
+  * @key __world
+  */ 
+  static function sso_distribute($id, $userid)
+  {
+    if(!$study = MongoLib::findOne_editable('studies', $id))
+      return ErrorLib::set_error("That study is not within your domain");
+      
+    if(!$protocol = MongoLib::findOne_viewable('protocols', $study['protocol']))
+      return ErrorLib::set_error("Invalid protocol");
+    
+    $q_list = $protocol['q_list'];
+    $users = $study['users'];
+    
+    // all clear! 
+  
+    // transform each pq into a question and assign it to the user
+    foreach ($q_list as $q) {
+      $q_id = Question::add($study['test'], $q['pq'], $q['pdata']);
+      $thing = array('questions', $q_id);
+      PermLib::grant_permission($thing, "user:$userid", 'root');
+      PermLib::grant_permission($thing, "admin:*", 'root');
+    }
+    
+    return $id;   
+  }
+  
+  
+  /** 
   * Distribute questions 
   * @param string 
   * @return string 

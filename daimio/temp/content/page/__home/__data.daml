@@ -1,1 +1,2 @@
-{protocol find by_ids :529ce838aa77c4b20a000000 | __.#1 | __.q_list | mongous sanitize | __.pq | protoquestion find __ | > :questions}
+
+{protocol find by_ids @SSO.protocol_id | __.#1 | __.q_list | mongous sanitize | __.pq | protoquestion find __ | > :protoquestions}

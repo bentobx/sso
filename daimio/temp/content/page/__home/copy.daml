@@ -1,12 +1,16 @@
 <h1>SSO: Sound Off!</h1>
 <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
+  <input type="hidden" name="study_id" value="{@SSO.study_id}">
+  <input type="hidden" name="test_id" value="{@SSO.test_id}">
   <input type="hidden" name="qids" value="{@questions | mongous sanitize | __._id}">
-  {begin questions | merge with @questions}
+  {begin questions | merge with @protoquestions}
     <h2>{public.text}</h2>
-    <input type="hidden" name="qid[{_id}]" value="{_id}">
+    <input type="hidden" name="pqid[{_id}]" value="{_id}">
     <p>What do you think?
     <select name="choice[{_id}]">
-      {process for_each string "<option value='{value}'>{value}</option>" with public.choices as value}
+      {/ process for_each string "<option value='{value}'>{value}</option>" with public.choices as value}
+      <option value="1">Yes</option>
+      <option value="0">No</option>
     </select></p>
     <p>Specific example?</p>
     <textarea rows="5" cols="50" name="details[{_id}]"></textarea>
@@ -16,10 +20,15 @@
   
   <textarea name="commands" style="display:none">
     {begin verbatim | process escape}
-        {#choice | > :choices}
-        {begin answers | process for_each with #qid}          
-          {answer add question key input #choice.{value}}
-        {end answers}
+      {time represent | > :timestamp}
+      {member register username @timestamp password @timestamp | study sso_distribute id #study_id}
+      {#choice | > :choices}
+      {myself authenticate username @timestamp password @timestamp}
+      {test find_questions id #test_id | mongous sanitize | > :questions }
+      {begin answers | process for_each with #pqid}    
+        { @questions | collection extract expression "{this.pq | is like value}" 
+        | __.#1 | tap | answer add question __._id input #choice.{value}}     
+      {end answers}
     {end verbatim}
   </textarea>
   

@@ -192,7 +192,6 @@ class Member
     return $id;
   }
   
-  
   /** 
   * Register a new member 
   * @param string Username

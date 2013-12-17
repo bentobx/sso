@@ -18,7 +18,7 @@ class Protocol
   * @param array Square (draft, sandbox, published, deprecated)
   * @param string Supports sort, limit, skip, fields, nofields, count, i_can and attrs: {* (:limit 5 :skip 30 :sort {* (:name "-1")} :nofields (:pcache :scores))} or {* (:fields :name)} or {* (:count :true)} or {* (:tags :nifty)} or {* (:i_can :edit)}
   * @return array 
-  * @key __member __lens __exec
+  * @key __world
   */ 
   static function find($by_ids=NULL, $by_family=NULL, $by_square=NULL, $options=NULL)
   {

@@ -200,7 +200,7 @@ class Study
   */ 
   static function sso_distribute($id, $userid)
   {
-    if(!$study = MongoLib::findOne_editable('studies', $id))
+    if(!$study = MongoLib::findOne_viewable('studies', $id))
       return ErrorLib::set_error("That study is not within your domain");
       
     if(!$protocol = MongoLib::findOne_viewable('protocols', $study['protocol']))

@@ -13,15 +13,35 @@
   
   <div id="bot-list"  data-daimio-template="show-bots" language="daimio">
     <h2>Bots!</h2>
-    {begin block | merge data __in}
-      <div>
-        <p>
-          {_name}
-          <button class="run" data-value="{_key}">Run</button>
-        </p>
-        <code>{_code}</code>
-      </div>
-    {end block}
+    <form id="activate-bots">
+      {begin block | merge data __in}
+        <div>
+          <p>
+            <label>
+              <input type="checkbox" name="active[]" value="{_key}">
+              {_name}
+            </label>
+            <button class="run" data-value="{_key}">Run</button>
+            <button class="toggle-code" data-value="{_key}">Show code</button>
+          </p>
+          <textarea id="code{_key}" style="display:none">{_code}</textarea>
+        </div>
+      {end block}
+      
+      <p>
+        <label for="start_date">start date</label>
+        <input type="text" name="start_date" value="" id="start_date">
+      </p>
+      <p>
+        <label for="end_date">end date</label>
+        <input type="text" name="end_date" value="" id="end_date">
+      </p>
+      <p>
+        <label for="iterations">iterations</label>
+        <input type="text" name="iterations" value="" id="iterations">
+      </p>
+      <p><input type="submit" name="gobots" value="Go bots go!"></p>
+    </form>
   </div>
   
   <form id="newbot">
@@ -68,15 +88,31 @@
       @answer-list dom-set-html
       show-answers -> @answer-list
 
-      // ADD ANSWER
-      answer-add 
+      // ADD AN ANSWER
+      
+      add-answer 
         { $answers 
         | poke {__in} 
+        | >$answers
         | * (:key :answers :value __) }
 
-      answer-add -> @local-write
-      answer-add -> {process sleep for 100} -> {:answers} -> @local-read-req
+      add-answer -> @local-write
+      add-answer -> {process sleep for 100} -> {:answers} -> @local-read-req
       
+      // ADD SEVERAL ANSWERS
+      
+      collect-answers
+        { $answers | count | >user-id
+        | $time | else {time stampwrap | __.stamp} | >time     / $time is pretty silly
+        | __in
+        | map block "{ _value
+                     | poke _user-id path :user 
+                     | poke _time path :time}"
+              with {* (:user-id _user-id :time _time)}
+        | do "{_value | >@send}"
+        }
+      
+      collect-answers.send -> add-answer
 
       // GET BOTS
       
@@ -88,7 +124,7 @@
 
       bot-add 
         { $bots 
-        | poke {__in | list remove by_key :submit} 
+        | poke {__in | list remove by_key :submit | map block "{__ | string trim}"} 
         | * (:key :bots :value __) }
 
       @newbot   dom-on-submit
@@ -101,11 +137,30 @@
       @bot-list dom-set-html
       show-bots -> @bot-list
       
+      // TOGGLE BOT CODE
+      
+      @tweaker    tweak-style
+      @togglecode dom-on-click .toggle-code
+      @togglecode -> {"code{__}" | run | * (:id __ :attr :display :value :block)} -> @tweaker
+      
       // RUN BOT
       
-      @runbot dom-on-click .run
-      @runbot -> {__ | $bots.{__}.code | unquote | run} -> answer-add
+      run-bot {__ | $bots.{__}.code | string trim | unquote | run}
       
+      @runbot dom-on-click .run
+      @runbot -> run-bot -> collect-answers
+      
+      // RUN LOTS O' BOTS
+      
+      bot-runner
+        { __ | >bot-ids
+        | time stampwrap | __.stamp | minus 3000 | >$time
+        | _bot-ids | do "{__ | >@run}"
+        }
+      
+      @activate-bots dom-on-submit
+      @activate-bots -> {__.active} -> bot-runner
+      bot-runner.run -> run-bot
   </script>
 
 
@@ -138,6 +193,18 @@
       }
     })
     
+    D.import_port_flavour('tweak-style', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        try {
+          var el = document.getElementById(ship.id)
+          if(!el) return false
+
+          el.style[ship.attr] = ship.value        
+        } catch(e) {}
+      }
+    })
+    
     
     document.addEventListener('DOMContentLoaded', function() {      
       OuterSpace = D.make_me_a_space_as_fast_as_you_can() // published for debug
@@ -147,10 +214,73 @@
     
     /* 
     
-    { * (:pq "529cea2caa77c4b20a00000c" :question "Are schools working to support the mental health of youth?" :choices ("Yes" "No") :birthyear 1976  :LGBTQ "Yes"  :ontario "Yes"  :town "Toronto"  :pronoun "he") | >one
-    | * (:pq "529cea53aa77c4ba0a00000c" :question "Is media working to support the mental health of youth?" :choices ("Yes" "No") :birthyear 1976  :LGBTQ "Yes"  :ontario "Yes"  :town "Toronto"  :pronoun "he") | >two
-    | * (:pq "529cea80aa77c4b10a000007" :question "Are communities working to support the mental health of youth?" :choices ("Yes" "No") :birthyear 1976  :LGBTQ "Yes"  :ontario "Yes"  :town "Toronto"  :pronoun "he") | >three
+    
+    ok. not quite as good, but you did all right.
+    today you're going to:
+    -- hook user into the answers
+    -- hook (variable) timestamp into the answers
+    -- integrate with analysis
+    - make a 'run bots lots' thing:
+      -- toggle code textarea
+      - list of bots to run v1: xlist
+      - start / end date fields
+      - number of iterations
+    - start on widgets
+    - add good bots (copy them into here)
+    - make a lot of answers
+    
+    
+    
+    ok. good work. 
+    so today your job is to make bots work. 
+    -- you'll need a demonstration answer.
+    -- and a bot entry form.
+    and a way to run the bots and add answers
+      in particular run a subset N times.
+    and you'll want to overview the answers you've added to localstorage
+    
+    then, mix those in with the *real* answers from mongodb.
+    then figure out the IR for widget output.
+    
+    Male Toronto 70s Yesbot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >three
     | (_one _two _three) }
+    
+    Female Toronto 70s Yesbot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >three
+    | (_one _two _three) }
+    
+    Male Toronto 70s Nobot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >three
+    | (_one _two _three) }
+    
     
     
     */

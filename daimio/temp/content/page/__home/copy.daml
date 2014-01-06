@@ -36,6 +36,8 @@
       
     {end verbatim}
   </textarea>
+</form>
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data">
   <h1>Tell us about yourself!</h1>
   <p>These optional questions will help us better serve your community.</p> 
   <form method="post" accept-charset="utf-8" enctype="multipart/form-data">
@@ -52,22 +54,21 @@
     <option value="1">Yes</option>
     <option value="0">No</option>   
   </select>
-    <input type="submit" value="Submit"> 
-    <textarea name="commands" style="display:none">
-      {begin verbatim | process escape}
-        
-        {begin makeuser | if {@MY.id | not}}
-          {time represent | > :timestamp}
-          {member register username @timestamp password @timestamp | > :user_id}
-          {myself authenticate username @timestamp password @timestamp}          
-        {end makeuser}
-        
-        {my set in :profiles for @user_id path :ontario value #ontario}
-        {my set in :profiles for @user_id path :city value #city}
-        {my set in :profiles for @user_id path :pronoun value #pronoun}
-        {my set in :profiles for @user_id path :background value #background}
-        {my set in :profiles for @user_id path :lgbtq value #lgbtq}
-      {end verbatim}
-    </textarea>
-  </form>
+  <input type="submit" value="Submit"> 
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+      
+      {begin makeuser | if {@MY.id | not}}
+        {time represent | > :timestamp}
+        {member register username @timestamp password @timestamp | > :user_id}
+        {myself authenticate username @timestamp password @timestamp}          
+      {end makeuser}
+      
+      {my set in :profiles for @user_id path :ontario value #ontario}
+      {my set in :profiles for @user_id path :city value #city}
+      {my set in :profiles for @user_id path :pronoun value #pronoun}
+      {my set in :profiles for @user_id path :background value #background}
+      {my set in :profiles for @user_id path :lgbtq value #lgbtq}
+    {end verbatim}
+  </textarea>
 </form>

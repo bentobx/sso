@@ -3,4 +3,4 @@
 <section id="events">{%events}</section>
 <section id="resources">{%resources}</section>
 
-{%global/sound_off_modals}
+{%global/sound_off_forms}

@@ -1,0 +1,387 @@
+<!doctype html> 
+<html> 
+<head> 
+  <meta charset="utf-8">
+  <title>SSO Reports</title>
+  <script type="text/javascript" src="{@SITE.path}/js/daimio_composite.js"></script>
+</head>
+
+<body style="display:none;color:white;background:black">
+  <h1>SSO Reports</h1>
+
+  <div id="reports"></div>
+
+
+  <script type="text/javascript">
+    answers = {study compose_answers id @SSO.study_id}
+  </script>
+  
+  {begin js | escape}  
+
+  <script type="text/daml" class="spaceseeds">
+    // GENERAL STUFF //
+    outer
+      @answers-in  from-js
+      @answers-out dom-set-text
+
+      @answers-in -> {__ | >$answers | __.#1} -> @answers-out
+  </script>
+
+
+
+  <h2>Stuff over time</h2>
+
+    <style>
+      .active {color: green;}
+    </style>
+
+  <div id="filterbox">
+    <p>Filters:</p>
+    <div id="dept-filter"></div>
+    <div id="position-filter"></div>
+    <div id="question-filter"></div>
+    <div id="user-filter"></div>
+  </div>
+
+  <div>
+    Stack:
+    <select id="stackpicker">
+      <option value="time">Time</option>
+      <option value="question">Question</option>
+      <option value="user">User</option>
+      <option value="position">Position</option>
+      <option value="department">Department</option>
+    </select>
+  </p>
+
+  <p>
+    Projection:
+    <select id="projpicker">
+      <option value="0">Identity average</option>
+      <option value="1">Identity sum</option>
+      <option value="2">Number of answers</option>
+    </select>
+  </p>
+  
+  <div id="sotdraw" data-daimio-template="sotdraw" language="daimio">
+    { $answers
+    | filter block "{__.depot.dept      | is in $active-depts      | or {$active-depts     | count | not} }"
+    | filter block "{__.depot.position  | is in $active-positions  | or {$active-positions | count | not} }"
+    | filter block "{__.question        | is in $active-questions  | or {$active-questions | count | not} }"
+    | filter block "{__.depot.email     | is in $active-users      | or {$active-users     | count | not} }"
+    | group by $stackblock
+    | map block $projblock | >$list ||}
+
+    {// THINK: we should only run these filters if needed... and run a set of them? 
+     //    | filter block $user-filter
+     //  --> if user-filter is empty, filter returns whole input }
+
+    {begin url | >url ||}https://chart.googleapis.com/chart?cht=bvs&chbh=a&chds=0,{
+          $list | math max
+        }&chd=t:{
+          range 14 | subtract 1 | map block "{$list.{__} | else 0}" | join on "," 
+        }&chs=400x200&chco=4D89F9&chxt=x,y{end url}
+
+    <p></p>
+
+    <img src="{_url}" id="stuff" width="400" height="200">
+  </div>
+  
+
+  <div id="stuff-over-time"></div>
+
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @stuff-over-time dom-set-html        
+      @stackpicker dom-on-change
+      @projpicker dom-on-change
+
+      sot-setup
+        {* (1 :HR 2 :VP 3 :OR 4 :QC) | >$dept-names ||}
+        {* (1 :CEO 2 :CTO 3 :CFO 4 :COO 5 :CIO 6 :CCO 7 :CAO 8 :CVO 9 :CDO) | >$position-names ||}
+        {$answers.*.depot.dept | unique | >$departments}
+        {$answers.*.depot.position | unique | >$positions}
+        {$answers.*.question | unique | >$questions}
+
+        { $answers.*.time | >$times 
+        | math min | >$mintime | $times
+        | math max | >$maxtime 
+        | subtract $mintime | >$difftime 
+        | divide by 10 | >$chunktime ||}
+
+        {"{__.time | subtract $mintime | divide by $chunktime | round}" | >$stackblock} {// derp}
+
+      projset
+        {__ | switch (
+          0 "{__.*.answer | >$as | ({$as | add} {$as | count}) | divide}"
+          1 "{__.*.answer | add}"
+          2 "{__.*.answer | count}"
+        ) | >$projblock ||}
+
+      stackset
+        {__ | switch (
+          :time         "{__.time | subtract $mintime | divide by $chunktime | round}"
+          :question     "{__.question | list index data $questions}"
+          :user         "{__.user | subtract 121}"
+          :department   "{__.depot.dept}"
+          :position     "{__.depot.position}"
+        ) | >$stackblock ||}
+
+      sotdraw
+
+      @answers-in -> sot-setup -> {0} -> projset -> sotdraw -> @stuff-over-time
+      @stackpicker -> stackset -> sotdraw
+      @projpicker -> projset
+
+
+      // DEPARTMENT FILTER
+
+      @dept-filter dom-set-html
+      @dept-link dom-on-click .dept-link
+
+      dept-filter-draw
+        Department:
+        {begin block | each data $departments}
+          <a href="#" class="dept-link {_value | is in $active-depts | then :active}" data-value="{_value}">{$dept-names.{_value}}</a>
+        {end block}
+
+      dept-link-handler
+        { __ | >$dept-id | is in $active-depts
+        | then "{$active-depts | list remove by_value $dept-id}"
+          else "{$active-depts | union ($dept-id)}" 
+        | run | >$active-depts}
+
+      sot-setup -> dept-filter-draw -> @dept-filter 
+      @dept-link -> dept-link-handler -> dept-filter-draw
+      dept-link-handler -> sotdraw
+
+
+      // POSITION FILTER
+
+      @position-filter dom-set-html
+      @position-link dom-on-click .position-link
+
+      position-filter-draw
+        Position:
+        {begin block | each data $positions}
+          <a href="#" class="position-link {_value | is in $active-positions | then :active}" data-value="{_value}">{$position-names.{_value}}</a>
+        {end block}
+
+      position-link-handler
+        { __ | >$position-id | is in $active-positions
+        | then "{$active-positions | list remove by_value $position-id}"
+          else "{$active-positions | union ($position-id)}" 
+        | run | >$active-positions}
+
+      sot-setup -> position-filter-draw -> @position-filter 
+      @position-link -> position-link-handler -> position-filter-draw
+      position-link-handler -> sotdraw
+
+
+      // QUESTION FILTER
+
+      @question-filter dom-set-html
+      @question-link dom-on-click .question-link
+
+      question-filter-draw
+        Question:
+        {begin block | each data $questions}
+          <a href="#" class="question-link {_value | is in $active-questions | then :active}" data-value="{_value}">{_value | string truncate to 15 add "..."}</a>
+        {end block}
+
+      question-link-handler
+        { __ | >$question-id | is in $active-questions
+        | then "{$active-questions | list remove by_value $question-id}"
+          else "{$active-questions | union ($question-id)}" 
+        | run | >$active-questions}
+
+      sot-setup -> question-filter-draw -> @question-filter 
+      @question-link -> question-link-handler -> question-filter-draw
+      question-link-handler -> sotdraw
+
+
+      // USER FILTER
+
+      @user-filter dom-set-html
+      @user-link dom-on-click .user-link
+
+      user-filter-draw
+        User: 
+        {begin block | each data $users}
+          <a href="#" class="user-link {_value | is in $active-users | then :active}" data-value="{_value}">{_value}</a>
+        {end block}
+
+      user-link-handler
+        { __ | >$user-id | is in $active-users
+        | then "{$active-users | list remove by_value $user-id}"
+          else "{$active-users | union ($user-id)}" 
+        | run | >$active-users}
+
+      sot-setup -> user-filter-draw -> @user-filter 
+      @user-link -> user-link-handler -> user-filter-draw
+      user-link-handler -> sotdraw
+  </script>
+
+
+
+  <h2>Questions per user</h2>
+  <select id="userpicker"></select>
+  <pre id="questions_per_user"></pre>
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @userpicker-in  dom-on-change userpicker
+      @userpicker-out dom-set-html  userpicker
+      @qpu-out        dom-set-html  questions_per_user
+
+      userpicker-load
+        {__.*.user | unique | sort | >users | __.#1 | >$current_user ||}
+        {begin options | each data _users}
+          <option>{_value}</option>
+        {end options}
+
+      qpudraw
+        { __ | >$current_user 
+        | $answers | first block "{__.user | eq $current_user}" 
+        | __ | >answer ||}
+        
+        <p>
+          {_answer.birthyear}
+          {_answer.LGBTQ}
+          {_answer.ontario}
+          {_answer.town}
+          {_answer.pronoun} 
+        </p>
+
+        <table>
+          { $answers | sort by :question | group by :question
+          | each block "<tr><td>{ _key }</td>
+                            <td>{ _value 
+                                | filter block "{__.user | eq $current_user}" 
+                                | each block "{__.choices.{__.answer}}" } </td></tr>" }
+        </table>
+
+      @answers-in -> userpicker-load -> @userpicker-out
+      userpicker-load -> {$current_user} -> qpudraw -> @qpu-out
+      @userpicker-in  -> qpudraw
+  </script>
+
+
+
+  <h2>Question picker with simple graph</h2>
+  <select id="asciipicker"></select>
+  
+  <pre id="asciichart"></pre>
+
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @asciipicker-in   dom-on-change asciipicker
+      @asciipicker-out  dom-set-html  asciipicker
+      @asciichart       dom-set-html
+
+      asciipicker-load
+        {__.*.question | unique | each block "<option>{_value}</option>"}
+
+      asciifilter
+        { __ | >q
+        | $answers 
+        | filter block "{__.question | eq _q}" 
+                 with   {* (:q _q)} }
+
+      asciidraw
+        <table>
+          {begin block | each data __in.#1.choices with {* (:answers __in)}}
+            <tr>
+              <td>{ _value }</td>
+              <td>{ {* (:key _key)} | >scope
+                  | _answers
+                  | filter block "{ __.answer | eq _key }" 
+                           with _scope 
+                  | each block "*"
+                         with _scope }</td>
+            </tr>
+          {end block}
+        </table>
+        
+      @answers-in -> asciipicker-load -> @asciipicker-out
+      @answers-in -> {__.#1.question} -> asciifilter -> asciidraw -> @asciichart
+      @asciipicker-in  -> asciifilter
+  </script>
+
+
+
+
+  <h2>Q vs A count</h2>
+  <div id="bardiv"></div>
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @bardiv dom-set-html
+
+      bardraw
+        {begin qs | each data {__in | group by :question}}
+          {__ | group by :answer | >agroup ||}
+          <p>{_key}</p>
+          <div style="height:20px; width:{_agroup.#1 | count}px; background-color:pink">Yes</div>
+          <div style="height:20px; width:{_agroup.#2 | count}px; background-color:powderblue">No</div>
+        {end qs}
+
+      @answers-in -> bardraw -> @bardiv
+  </script>
+
+
+
+  <h2>A basic list of questions</h2>
+  <div id="basiclist"></div>
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @basiclist dom-set-html
+
+      basiclist 
+        {begin choices | >choices ||}
+          <p>
+            {_value}: {_answers | filter block "{__.answer | eq _key}" with {* (:key _key)} | count}
+          </p>
+        {end choices}
+
+        { __ | group by :pq 
+        | each block "<h3>{_value.#1.question}</h3> 
+                      {_value.#1.choices | do _choices with {* (:answers _value)}}" 
+               with {* (:choices _choices)} }
+
+      @answers-in -> basiclist -> @basiclist
+  </script>
+
+
+
+  <h2>Compact Answers:</h2>
+  <div id="compact"></div>
+  <script type="text/daml" class="spaceseeds">
+    outer
+      @compact dom-set-text
+
+      compact 
+        {__ | group by :user | map block "{__.*.answer}"}}
+
+      @answers-in -> compact -> @compact
+  </script>
+
+
+
+  <h3>An Answer:</h3>
+  <div id="answers-out">...</div>
+  
+  
+  
+
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {      
+      OuterSpace = D.make_me_a_space_as_fast_as_you_can() // published for debug
+      
+      var localanswers = JSON.parse(localStorage.getItem('answers'))
+      
+      D.send_value_to_js_port(OuterSpace, 'answers-in', answers.concat(localanswers))
+    })
+  </script>
+  {end js}
+
+</body>
+</html>

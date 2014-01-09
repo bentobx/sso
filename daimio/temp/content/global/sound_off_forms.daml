@@ -1,0 +1,128 @@
+{/ SOUND OFF! ------------------------------------------ }
+<form method="post" class="form-horizontal" id="sound-off-step-1-form">
+  <div class="modal fade" id="sound-off-step-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Sound OFF!</h4>
+        </div>
+        <div class="modal-body clearfix">
+          {begin questions | merge with @protoquestions}
+            <div class="form-group clearfix">
+              <label for="" class="form-label col-md-4">{public.text}</label>
+              <input type="hidden" name="pqid[{_id}]" value="{_id}">
+              <div class="col-md-8">
+                <p class="help-block">What do you think?</p>
+                <select name="choice[{_id}]" class="form-control" >
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                  {/ process for_each string "<option value='{value}'>{value}</option>" with public.choices as value}
+                </select>
+                <p class="help-block">Specific example?</p>
+                <textarea rows="5" cols="50" name="details[{_id}]" class="form-control"></textarea>
+              </div>
+            </div>
+            <hr>
+          {end questions}
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">Year of birth:</label>
+            <div class="col-md-8">
+              <input type="text" class="form-control" name="birth_year" />
+            </div>
+          </div>
+
+          <textarea name="commands" style="display:none">
+            {begin verbatim | process escape}
+              {time represent | > :timestamp}
+              {member register username @timestamp password @timestamp | > :user_id}
+              {myself authenticate username @timestamp password @timestamp}
+              {@user_id | study sso_distribute id @SSO.study_id}
+
+      
+              {test find_questions id @SSO.test_id | mongous sanitize | > :questions}
+              {begin answers | process for_each with #pqid}    
+                { @questions | collection extract expression "{this.pq | is like value}" 
+                | __.#1 | answer add question __._id input #choice.{value}}     
+                {my set in :profiles for @user_id path value value #details.{value} }
+              {end answers}
+              {my set in :profiles for @user_id path :birth_year value #birth_year}
+      
+            {end verbatim}
+          </textarea>
+        </div>
+        <div class="modal-footer clearfix">
+          <button class="btn btn-primary btn-lg" type="submit">Submit Your Sound Off!</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</form>
+
+
+{/ ADD'L INFO ------------------------------------------ }
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal">
+  
+  <div class="modal fade" id="sound-off-step-2">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Tell us about yourself!</h4>
+        </div>
+        <div class="modal-body">
+          <p>These optional questions will help us better serve your community.</p> 
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">Confirm you live in Ontario:</label>
+            <div class="col-md-8">
+              <select name="ontario" class="form-control">
+                <option value="1">Yes</option>
+                <option value="0">No</option>   
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">What city/town do you live in? </label>
+            <div class="col-md-8"><input type="text" class="form-control" name="city" /></div>
+          </div>
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">What's your preferred pronoun?</label>
+            <div class="col-md-8"><input type="text" class="form-control" name="pronoun" /></div>
+          </div>
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">Optional ethnicity/background info?</label>
+            <div class="col-md-8"><input type="text" class="form-control" name="background" /></div>
+          </div>
+          <div class="form-group">
+            <label for="" class="form-label col-md-4">Do you identify with the LGBTQ community?</label>
+            <div class="col-md-8">
+              <select name="lgbtq" class="form-control">
+                <option value="1">Yes</option>
+                <option value="0">No</option>   
+              </select>
+            </div>
+          </div>
+          <textarea name="commands" style="display:none">
+            {begin verbatim | process escape}
+      
+              {begin makeuser | if {@MY.id | not}}
+                {time represent | > :timestamp}
+                {member register username @timestamp password @timestamp | > :user_id}
+                {myself authenticate username @timestamp password @timestamp}          
+              {end makeuser}
+      
+              {my set in :profiles for @user_id path :ontario value #ontario}
+              {my set in :profiles for @user_id path :city value #city}
+              {my set in :profiles for @user_id path :pronoun value #pronoun}
+              {my set in :profiles for @user_id path :background value #background}
+              {my set in :profiles for @user_id path :lgbtq value #lgbtq}
+            {end verbatim}
+          </textarea>
+        </div>
+        <div class="modal-footer">
+          <input type="submit" value="Submit Optional Answers" class="btn btn-default btn-lg"> 
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</form>

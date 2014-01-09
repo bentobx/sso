@@ -5761,8 +5761,18 @@ html {
 body {
   margin: 0;
   height: 100%;
-  padding-top: 60px;
+  padding-top: 50px;
 }
 body .btn {
   text-decoration: none;
+}
+.jumbotron {
+  padding-top: 0;
+  height: 540px;
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background-size: cover;
+  background-image: url(../images/sso_bg.gif);
 }

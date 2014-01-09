@@ -11,7 +11,7 @@
 <body style="display:none">
   <h1>SSO Robots</h1>
   
-  <div id="bot-list"  data-daimio-template="show-bots" language="daimio">
+  <div id="bot-list" data-daimio-template="show-bots" language="daimio">
     <h2>Bots!</h2>
     <form id="activate-bots">
       {begin block | merge data __in}
@@ -92,12 +92,12 @@
       
       add-answer 
         { $answers 
-        | poke {__in} 
+        | poke {__in} path "#0"
         | >$answers
         | * (:key :answers :value __) }
 
       add-answer -> @local-write
-      add-answer -> {process sleep for 100} -> {:answers} -> @local-read-req
+      add-answer -> {__.value} -> show-answers
       
       // ADD SEVERAL ANSWERS
       
@@ -117,7 +117,6 @@
       // GET BOTS
       
       @init -> {:bots} -> @local-read-req
-      @local-read-in -> local-shuffle
       local-shuffle.bots -> {__ | >$bots} -> show-bots
       
       // ADD BOT
@@ -129,7 +128,7 @@
 
       @newbot   dom-on-submit
       @newbot -> bot-add -> @local-write
-      bot-add -> {process sleep for 100} -> {:bots} -> @local-read-req
+      bot-add -> {__.value} -> show-bots
     
       // SHOW BOTS
       
@@ -153,13 +152,18 @@
       // RUN LOTS O' BOTS
       
       bot-runner
-        { __ | >bot-ids
-        | time stampwrap | __.stamp | minus 3000 | >$time
-        | _bot-ids | do "{__ | >@run}"
+        { __ | >form
+        | _form.end_date | minus _form.start_date | >diff
+        | divide by {_form.iterations | minus 1 | max 1} 
+        | math round | >step
+       || range _form.iterations start 0
+        | do "{ _value | times _step | add _start | >$time
+              | _active | do "{__ | >@run | process sleep for 50}"}"
+          with {* (:step _step :start _form.start_date :active _form.active)}
         }
       
       @activate-bots dom-on-submit
-      @activate-bots -> {__.active} -> bot-runner
+      @activate-bots -> bot-runner
       bot-runner.run -> run-bot
   </script>
 
@@ -220,14 +224,18 @@
     -- hook user into the answers
     -- hook (variable) timestamp into the answers
     -- integrate with analysis
-    - make a 'run bots lots' thing:
+    -- make a 'run bots lots' thing:
       -- toggle code textarea
-      - list of bots to run v1: xlist
-      - start / end date fields
-      - number of iterations
-    - start on widgets
-    - add good bots (copy them into here)
-    - make a lot of answers
+      -- list of bots to run v1: xlist
+      -- start / end date fields
+      -- number of iterations
+    -- add good bots (copy them into here)
+    -- make a lot of answers
+    - start on widgets:
+      - add bot runner to reports page
+      - add simple div graphs
+      - create data structure for representations...
+      
     
     
     
@@ -287,7 +295,7 @@
     // add time and user id 
     
     // @init -> {:foo} -> @local-read-req
-    // @local-read-in -> {__ | * (:key :foo :value {__ | add 1}) | tap} -> @local-write
+    // @local-read-in -> {__ | * (:key :foo :value {__ | add 1})} -> @local-write
     
   </script>
   

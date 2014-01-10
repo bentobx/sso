@@ -314,6 +314,52 @@ class Study
   
   
   /** 
+  * Returns a list of yes and no answer totals for each PQ
+  * @param array Study id
+  * @return array 
+  * @key __world
+  */ 
+  static function yesno($id)
+  {
+    // get the study
+    if(!$study = MongoLib::findOne('studies', $id))
+      return ErrorLib::set_error("No such study found");
+    
+    // get the answers
+    if(!$answers = MongoLib::find('answers', array('test' => $study['test'])))
+      return ErrorLib::set_error("No valid answers were detected");
+    
+    // get the questions
+    foreach($answers as $answer)
+      $qids[] = $answer['question'];
+    if(!$questions = MongoLib::findIn('questions', $qids))
+      return ErrorLib::set_error("No valid questions were detected");
+    
+    // get the PQs
+    foreach($questions as $question)
+      $pqids[] = $question['pq'];
+    if(!$pqs = MongoLib::findIn('protoquestions', $pqids))
+      return ErrorLib::set_error("No valid protoquestions were detected");
+    
+    // all clear!
+    
+    foreach($pqids as $pqid)
+      $totals[(string) $pqid] = array('yes' => 0, 'no' => 0, 'total' => 0);
+    
+    foreach($answers as $answer) {
+      $pqid = (string) $pqs[(string) $questions[(string) $answer['question']]['pq']]['_id'];
+      
+      $index = $answer['input'] ? 'yes' : 'no';
+      
+      $totals[$pqid][$index]++;
+      $totals[$pqid]['total']++;
+    }
+    
+    return $totals;
+  }
+  
+  
+  /** 
   * Returns your answers for a particular study
   * @param array Study id
   * @param string Supports sort, limit, skip, fields, nofields, count, i_can and attrs: {* (:limit 5 :skip 30 :sort {* (:name "-1")} :nofields (:pcache :scores))} or {* (:fields :name)} or {* (:count :true)} or {* (:tags :nifty)} or {* (:i_can :edit)}

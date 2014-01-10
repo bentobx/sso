@@ -6,18 +6,14 @@
   :communities  :529cea80aa77c4b10a000007 )
 | > :questions | ""}
 
-{study compose_answers id @SSO.study_id | > :answers | ""}
+{study yesno id @SSO.study_id | > :totals | ""}
 
 <div class="row">
   {begin charts | foreach with @questions}
-    { @answers 
-    | extract "{this.pq | is like value}" | > :my_answers
-    | collection count | > :total
-    | @my_answers | __.answer | math add | > :yestotal
-    | @total | math subtract value @yestotal | > :nototal
-    | @yestotal | math divide by @total | *: 100 | math round | > :temp 
+    { @totals.{value} | > :my_totals
+    | @my_totals.yes | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :yes
-    | @nototal  | math divide by @total | *: 100 | math round | > :temp 
+    | @my_totals.no  | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :no 
     | ""}
     

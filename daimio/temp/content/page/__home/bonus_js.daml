@@ -14,3 +14,12 @@
   });
   </script>
 {end js}
+
+<script src="js/snap.svg.js"></script>
+<script src="js/pizza.js"></script>
+
+{begin js | process escape}
+  <script>
+    Pizza.init(document.body, {"show_percent": true, donut: false});
+  </script>
+{end js}

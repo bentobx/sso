@@ -6,7 +6,7 @@
   <script type="text/javascript" src="{@SITE.path}/js/daimio_composite.js"></script>
 </head>
 
-<body style="display:none;color:white;background:black">
+<body style="display:none">
   <h1>SSO Reports</h1>
 
   <div id="reports"></div>
@@ -21,10 +21,16 @@
   <script type="text/daml" class="spaceseeds">
     // GENERAL STUFF //
     outer
-      @answers-in  from-js
-      @answers-out dom-set-text
+      $answers []
+      $cron-answers []
 
-      @answers-in -> {__ | >$answers | __.#1} -> @answers-out
+      cron-answers {$answers | sort by :time | >$cron-answers}
+      
+      // @answers-in  from-js
+      // @answers-out dom-set-text
+
+      // answers-in -> {__ | >$answers | __.#1} -> @answers-out
+      answers-in -> cron-answers
   </script>
 
 
@@ -129,7 +135,7 @@
 
       sotdraw
 
-      @answers-in -> sot-setup -> {0} -> projset -> sotdraw -> @stuff-over-time
+      answers-in -> sot-setup -> {0} -> projset -> sotdraw -> @stuff-over-time
       @stackpicker -> stackset -> sotdraw
       @projpicker -> projset
 
@@ -224,45 +230,56 @@
 
 
 
-  <h2>Questions per user</h2>
-  <select id="userpicker"></select>
-  <pre id="questions_per_user"></pre>
+  <h2>User scanner</h2>
+  <div id="user-range-home" data-daimio-template="user-range-home" language="daimio">
+    <input id="user-range" type="range" min="0" max="{$user-range-size}" 
+           value="{$user-range-size}" style="width:{$user-range-size}px">
+  </div>
+  
+  <div id="questions_per_user" data-daimio-template="qpudraw" language="daimio">
+    { __ | >$current_user 
+    | $answers | filter block "{__.user | eq $current_user}" 
+    | >my_answers
+    | __.#1 | >answer ||}
+  
+    <p>{_answer.birthyear} -- Birthyear</p>
+    <p>{_answer.LGBTQ} -- LGBTQ</p>
+    <p>{_answer.ontario} -- Ontario</p>
+    <p>{_answer.town} -- Town</p>
+    <p>"{_answer.pronoun}" -- Pronoun</p>
+
+    { _my_answers
+    | do "<p>{__.choices.{__.answer}} -- {__.question}</p>" }
+          
+    {_answer.time | time stampwrap | >time ||}
+    
+    {_time.year}/{_time.month}/{_time.day} {_time.hour}:{_time.minute}:{_time.second}
+  </div>
+  
   <script type="text/daml" class="spaceseeds">
     outer
-      @userpicker-in  dom-on-change userpicker
-      @userpicker-out dom-set-html  userpicker
-      @qpu-out        dom-set-html  questions_per_user
-
-      userpicker-load
-        {__.*.user | unique | sort | >users | __.#1 | >$current_user ||}
-        {begin options | each data _users}
-          <option>{_value}</option>
-        {end options}
-
+      $user-range-size 400
+      
+      @qpu-out          dom-set-html  questions_per_user
+      @user-range       dom-on-change
+      @user-range-home  dom-set-html
+      
+      user-range-home
       qpudraw
-        { __ | >$current_user 
-        | $answers | first block "{__.user | eq $current_user}" 
-        | __ | >answer ||}
+
+      user-range-finder
+        { $answers | count | divide by 3
+        | times {__in | divide by {$user-range-size | add 1}} 
+        | math round 
+        | times 3
+        | >foo
+        | $cron-answers.{_foo}.user}
         
-        <p>
-          {_answer.birthyear}
-          {_answer.LGBTQ}
-          {_answer.ontario}
-          {_answer.town}
-          {_answer.pronoun} 
-        </p>
+      // THINK: why do we need _foo instead of just __ ?
 
-        <table>
-          { $answers | sort by :question | group by :question
-          | each block "<tr><td>{ _key }</td>
-                            <td>{ _value 
-                                | filter block "{__.user | eq $current_user}" 
-                                | each block "{__.choices.{__.answer}}" } </td></tr>" }
-        </table>
-
-      @answers-in -> userpicker-load -> @userpicker-out
-      userpicker-load -> {$current_user} -> qpudraw -> @qpu-out
-      @userpicker-in  -> qpudraw
+      answers-in -> user-range-home -> @user-range-home
+      @user-range -> user-range-finder -> qpudraw
+      cron-answers -> {$cron-answers.#-1.user} -> qpudraw -> @qpu-out
   </script>
 
 
@@ -302,8 +319,8 @@
           {end block}
         </table>
         
-      @answers-in -> asciipicker-load -> @asciipicker-out
-      @answers-in -> {__.#1.question} -> asciifilter -> asciidraw -> @asciichart
+      answers-in -> asciipicker-load -> @asciipicker-out
+      answers-in -> {__.#1.question} -> asciifilter -> asciidraw -> @asciichart
       @asciipicker-in  -> asciifilter
   </script>
 
@@ -324,7 +341,7 @@
           <div style="height:20px; width:{_agroup.#2 | count}px; background-color:powderblue">No</div>
         {end qs}
 
-      @answers-in -> bardraw -> @bardiv
+      answers-in -> bardraw -> @bardiv
   </script>
 
 
@@ -347,7 +364,7 @@
                       {_value.#1.choices | do _choices with {* (:answers _value)}}" 
                with {* (:choices _choices)} }
 
-      @answers-in -> basiclist -> @basiclist
+      answers-in -> basiclist -> @basiclist
   </script>
 
 
@@ -361,14 +378,14 @@
       compact 
         {__ | group by :user | map block "{__.*.answer}"}}
 
-      @answers-in -> compact -> @compact
+      answers-in -> compact -> @compact
   </script>
 
 
-
+<!--
   <h3>An Answer:</h3>
   <div id="answers-out">...</div>
-  
+-->
   
   
 
@@ -376,12 +393,222 @@
     document.addEventListener('DOMContentLoaded', function() {      
       OuterSpace = D.make_me_a_space_as_fast_as_you_can() // published for debug
       
-      var localanswers = JSON.parse(localStorage.getItem('answers'))
-      
-      D.send_value_to_js_port(OuterSpace, 'answers-in', answers.concat(localanswers))
+      // var localanswers = JSON.parse(localStorage.getItem('answers'))
+      // 
+      // D.send_value_to_js_port(OuterSpace, 'answers-in', answers.concat(localanswers))
     })
   </script>
   {end js}
+
+
+
+
+  {begin js | escape} 
+
+  <h1>SSO Robots</h1>
+
+  <div id="bot-list" data-daimio-template="show-bots" language="daimio">
+    <h2>Bots!</h2>
+    <form id="activate-bots">
+      {begin block | merge data __in}
+        <div>
+          <p>
+            <label>
+              <input type="checkbox" name="active[]" value="{_key}">
+              {_name}
+            </label>
+            <button class="run" data-value="{_key}">Run</button>
+            <button class="toggle-code" data-value="{_key}">Show code</button>
+          </p>
+          <textarea id="code{_key}" style="display:none">{_code}</textarea>
+        </div>
+      {end block}
+
+      <p>
+        <label for="start_date">start date</label>
+        <input type="text" name="start_date" value="" id="start_date">
+      </p>
+      <p>
+        <label for="end_date">end date</label>
+        <input type="text" name="end_date" value="" id="end_date">
+      </p>
+      <p>
+        <label for="iterations">iterations</label>
+        <input type="text" name="iterations" value="" id="iterations">
+      </p>
+      <p><input type="submit" name="gobots" value="Go bots go!"></p>
+    </form>
+  </div>
+
+  <form id="newbot">
+    <p><input type="text" name="name" value="" id="name" placeholder="bot name"></p>
+    <textarea name="code" placeholder="put code here" rows=5 cols=80></textarea>
+    <p><input type="submit" name="submit" value="Add Bot"></p>
+  </form>
+
+  <form id="clear-answers">
+    <p><input type="submit" name="submit" value="Remove all test answers"></p>
+  </form>
+
+  <script type="text/daml" class="spaceseeds">
+    outer
+      $bots []
+
+      @init from-js
+      @local-read-in
+      @local-read-req
+      @local-write
+
+      local-shuffle
+        { __.key 
+        | switch (
+            :bots    "{__ | >@bots}"
+            :answers "{__ | >@answers}"
+          )
+        | run with __in.value}
+
+      // GET ANSWERS
+      
+      answers-in {__ | >$answers}
+
+      @init -> {:answers} -> @local-read-req
+      @local-read-in -> local-shuffle
+      local-shuffle.answers -> answers-in
+
+      // ADD AN ANSWER
+
+      add-answer 
+        { $answers 
+        | poke {__in} path "#0"
+        | >$answers
+        | * (:key :answers :value __) }
+
+      add-answer -> @local-write
+
+      // ADD SEVERAL ANSWERS
+
+      collect-answers
+        { $answers | count | >user-id
+        | $time | else {time stampwrap | __.stamp} | >time     / $time is pretty silly
+        | __in
+        | map block "{ _value
+                     | poke _user-id path :user 
+                     | poke _time path :time}"
+              with {* (:user-id _user-id :time _time)}
+        | do "{_value | >@send}"
+        }
+
+      collect-answers.send -> add-answer
+
+      // GET BOTS
+
+      @init -> {:bots} -> @local-read-req
+      local-shuffle.bots -> {__ | >$bots} -> show-bots
+
+      // ADD BOT
+
+      bot-add 
+        { $bots 
+        | poke {__in | list remove by_key :submit | map block "{__ | string trim}"} 
+        | * (:key :bots :value __) }
+
+      @newbot   dom-on-submit
+      @newbot -> bot-add -> @local-write
+      bot-add -> {__.value} -> show-bots
+
+      // SHOW BOTS
+
+      show-bots
+      @bot-list dom-set-html
+      show-bots -> @bot-list
+
+      // TOGGLE BOT CODE
+
+      @tweaker    tweak-style
+      @togglecode dom-on-click .toggle-code
+      @togglecode -> {"code{__}" | run | * (:id __ :attr :display :value :block)} -> @tweaker
+
+      // RUN BOT
+
+      run-bot {__ | $bots.{__}.code | string trim | unquote | run}
+
+      @runbot dom-on-click .run
+      @runbot -> run-bot -> collect-answers
+
+      // RUN LOTS O' BOTS
+
+      bot-runner
+        { __ | >form
+        | _form.end_date | minus _form.start_date | >diff
+        | divide by {_form.iterations | minus 1 | max 1} 
+        | math round | >step
+       || range _form.iterations start 0
+        | do "{ _value | times _step | add _start | >$time
+              | _active | do "{__ | >@run | process sleep for 50}"}"
+          with {* (:step _step :start _form.start_date :active _form.active)}
+        }
+
+      @activate-bots dom-on-submit
+      @activate-bots -> bot-runner
+      bot-runner.run -> run-bot
+      
+      // REMOVE ANSWERS
+      
+      @clear-answers dom-on-submit
+      @clear-answers -> {* (:key :answers :value ())} -> @local-write
+  </script>
+
+
+  <script type="text/javascript">
+
+    // ok. so let's make a localstorage thing. we should use downports and dedicated read/write commands, 
+    // but instead we'll just fake it with an in/out/out (read-in/read-req/write) until we have downports.
+
+    D.import_port_flavour('local-read-in', {
+      dir: 'in',
+      outside_add: function() {
+        // yes, this is super weird, but we're just hacking around the lack of downports.
+        D.Etc.local_read_port = this
+      }
+    })
+
+    D.import_port_flavour('local-read-req', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        var result = JSON.parse(localStorage.getItem(ship)) || []
+        if(D.Etc.local_read_port)
+          D.Etc.local_read_port.enter({key: ship, value: result})
+      }
+    })
+
+    D.import_port_flavour('local-write', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        console.log(ship)
+        localStorage.setItem(ship.key, JSON.stringify(ship.value))
+      }
+    })
+
+    D.import_port_flavour('tweak-style', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        try {
+          var el = document.getElementById(ship.id)
+          if(!el) return false
+
+          el.style[ship.attr] = ship.value        
+        } catch(e) {}
+      }
+    })
+
+
+    document.addEventListener('DOMContentLoaded', function() {      
+      D.send_value_to_js_port(OuterSpace, 'init', 1)
+    })
+  </script>
+{end js}
+
+
 
 </body>
 </html>

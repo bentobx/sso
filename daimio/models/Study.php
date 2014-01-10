@@ -294,10 +294,11 @@ class Study
     // all clear!
     
     foreach($answers as $answer) {
+      $composite = $members[$answer['user']]['depot'];
+
       $composite['answer'] = $answer['input'];
       $composite['time'] = $answer['date']->sec;
       $composite['user'] = $answer['user'];      
-      $composite['depot'] = $members[$answer['user']]['depot'];
       
       $pq = $pqs[(string) $questions[(string) $answer['question']]['pq']];
 

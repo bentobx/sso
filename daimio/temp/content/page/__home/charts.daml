@@ -1,11 +1,35 @@
+<link href="css/pizza.css" media="screen, projector, print" rel="stylesheet" type="text/css" />
+
+{* (
+  :schools      :529cea2caa77c4b20a00000c
+  :media        :529cea53aa77c4ba0a00000c
+  :communities  :529cea80aa77c4b10a000007 )
+| > :questions | ""}
+
+{study compose_answers id @SSO.study_id | > :answers | ""}
+
 <div class="row">
-  <div class="col-md-4">  
-    <h2>Chart 1</h2>
-  </div>
-  <div class="col-md-4">
-    <h2>Chart 2</h2>
-  </div>
-  <div class="col-md-4">
-    <h2>Chart 3</h2>
-  </div>
+  {begin charts | foreach with @questions}
+    { @answers 
+    | extract "{this.pq | is like value}" | > :my_answers
+    | collection count | > :total
+    | @my_answers | __.answer | math add | > :yestotal
+    | @total | math subtract value @yestotal | > :nototal
+    | @yestotal | math divide by @total | *: 100 | math round | > :temp 
+    | if {@temp | less than 1} then 1 else @temp | > :yes
+    | @nototal  | math divide by @total | *: 100 | math round | > :temp 
+    | if {@temp | less than 1} then 1 else @temp | > :no 
+    | ""}
+    
+    <div class="col-md-4">  
+      <h2>{key}</h2>
+      
+      <ul data-pie-id="my-{key}-chart">
+        <li style="color:pink" data-value="{@yes}">Yes {@yes}%</li>
+        <li style="color:lightgreen" data-value="{@no}">No {@no}%</li>
+      </ul>
+      <div id="my-{key}-chart"></div>
+    
+    </div>
+  {end charts}
 </div>

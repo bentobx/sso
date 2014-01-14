@@ -115,7 +115,7 @@
         | subtract $mintime | >$difftime 
         | divide by 10 | >$chunktime ||}
 
-        {"{__.time | subtract $mintime | divide by $chunktime | round}" | >$stackblock} {// derp}
+        {"{__.time | subtract $mintime | divide by {$chunktime | max 0.4} | round}" | >$stackblock} {// derp}
 
       projset
         {__ | switch (
@@ -270,7 +270,7 @@
       user-range-finder
         { $answers | count | divide by 3
         | times {__in | divide by {$user-range-size | add 1}} 
-        | math round 
+        | round 
         | times 3
         | >foo
         | $cron-answers.{_foo}.user}
@@ -376,7 +376,7 @@
       @compact dom-set-text
 
       compact 
-        {__ | group by :user | map block "{__.*.answer}"}}
+        {__ | group by :user | map block "{__.*.answer}"}
 
       answers-in -> compact -> @compact
   </script>
@@ -484,6 +484,7 @@
         | * (:key :answers :value __) }
 
       add-answer -> @local-write
+      add-answer -> {__.value} -> answers-in
 
       // ADD SEVERAL ANSWERS
 
@@ -541,10 +542,10 @@
         { __ | >form
         | _form.end_date | minus _form.start_date | >diff
         | divide by {_form.iterations | minus 1 | max 1} 
-        | math round | >step
+        | round | >step
        || range _form.iterations start 0
         | do "{ _value | times _step | add _start | >$time
-              | _active | do "{__ | >@run | process sleep for 50}"}"
+              | _active | do "{__ | >@run | process sleep for 100}"}"
           with {* (:step _step :start _form.start_date :active _form.active)}
         }
 
@@ -556,6 +557,7 @@
       
       @clear-answers dom-on-submit
       @clear-answers -> {* (:key :answers :value ())} -> @local-write
+      @clear-answers -> {()} -> answers-in
   </script>
 
 
@@ -584,7 +586,6 @@
     D.import_port_flavour('local-write', {
       dir: 'out',
       outside_exit: function(ship) {
-        console.log(ship)
         localStorage.setItem(ship.key, JSON.stringify(ship.value))
       }
     })

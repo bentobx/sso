@@ -1,17 +1,33 @@
-<div class="page-header">
-  <h3>Resources</h3>
+<div class="container"><div class="page-header">
+  <h2>Resources</h2>
 </div>
-
-
-
-<p>Looking for articles, position and policy papers on the topic of mental health?  </p>
-
-<p>(Listing of external offsite resources) 
-_
-_
-_
-_
-  Fact Sheets
-Want to know more about mental health or  mental illness? Download our factsheets 
-
-(Links to downloaded PDFs) </p>
+  
+<div class="row">
+  <div class="col-md-6">
+    <h3>Articles, Position, &amp; Policy Papers</h3>
+      
+    <ul class="list-group">
+      <li class="list-group-item">  <span class="glyphicon glyphicon-file"></span>
+        <a href="">Lorem Ipsum Dolor sit Amet</a></li>
+        <li class="list-group-item"><span class="glyphicon glyphicon-file"></span>
+          <a href="">Consectetur Adipisicing Elit</a></li>
+          <li class="list-group-item"><span class="glyphicon glyphicon-file"></span>
+            <a href="">Sed do Eiusmod Tempor Incididunt</a></li>
+            <li class="list-group-item"><span class="glyphicon glyphicon-file"></span>
+              <a href="">Ut Labore et Dolore Magna Aliqua: ut Enim ad Minim Veniam</a></li>
+            </ul>
+      
+          </div>
+          <div class="col-md-6">
+  
+            <h3>Fact Sheets</h3>
+            <p>Want to know more about mental health or  mental illness?</p>
+            <ul class="list-unstyled">
+              <li><a href="">Fact Sheet 1</a></li>
+              <li><a href="">Fact Sheet 2</a></li>
+            </ul>
+          </div>
+        </div>
+  
+  
+      </div>

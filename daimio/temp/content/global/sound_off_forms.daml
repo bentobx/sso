@@ -20,7 +20,7 @@
                   {/ process for_each string "<option value='{value}'>{value}</option>" with public.choices as value}
                 </select>
                 <p class="help-block">Specific example?</p>
-                <textarea rows="5" cols="50" name="details[{_id}]" class="form-control"></textarea>
+                <textarea rows="2" cols="50" name="details[{_id}]" class="form-control"></textarea>
               </div>
             </div>
             <hr>

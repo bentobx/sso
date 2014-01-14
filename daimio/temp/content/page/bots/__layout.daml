@@ -1,0 +1,305 @@
+<!doctype html> 
+<html> 
+<head> 
+  <meta charset="utf-8">
+  <title>SSO Robots</title>
+  <script type="text/javascript" src="{@SITE.path}/js/daimio_composite.js"></script>
+</head>
+
+{begin js | escape} 
+
+<body style="display:none">
+  <h1>SSO Robots</h1>
+  
+  <div id="bot-list" data-daimio-template="show-bots" language="daimio">
+    <h2>Bots!</h2>
+    <form id="activate-bots">
+      {begin block | merge data __in}
+        <div>
+          <p>
+            <label>
+              <input type="checkbox" name="active[]" value="{_key}">
+              {_name}
+            </label>
+            <button class="run" data-value="{_key}">Run</button>
+            <button class="toggle-code" data-value="{_key}">Show code</button>
+          </p>
+          <textarea id="code{_key}" style="display:none">{_code}</textarea>
+        </div>
+      {end block}
+      
+      <p>
+        <label for="start_date">start date</label>
+        <input type="text" name="start_date" value="" id="start_date">
+      </p>
+      <p>
+        <label for="end_date">end date</label>
+        <input type="text" name="end_date" value="" id="end_date">
+      </p>
+      <p>
+        <label for="iterations">iterations</label>
+        <input type="text" name="iterations" value="" id="iterations">
+      </p>
+      <p><input type="submit" name="gobots" value="Go bots go!"></p>
+    </form>
+  </div>
+  
+  <form id="newbot">
+    <p><input type="text" name="name" value="" id="name" placeholder="bot name"></p>
+    <textarea name="code" placeholder="put code here" rows=5 cols=80></textarea>
+    <p><input type="submit" name="submit" value="Add Bot"></p>
+  </form>
+  
+  <div id="answer-list" data-daimio-template="show-answers" language="daimio">
+    <h2>Answers!</h2>
+    {begin block | each data __in}
+      <div>
+        {_value}
+      </div>
+    {end block}
+  </div>
+  
+  <script type="text/daml" class="spaceseeds">
+    outer
+      $bots []
+    
+      @init from-js
+      @local-read-in
+      @local-read-req
+      @local-write
+      
+      local-shuffle
+        { __.key 
+        | switch (
+            :bots    "{__ | >@bots}"
+            :answers "{__ | >@answers}"
+          )
+        | run with __in.value}
+      
+      // GET ANSWERS
+      
+      @init -> {:answers} -> @local-read-req
+      @local-read-in -> local-shuffle
+      local-shuffle.answers -> {__ | >$answers} -> show-answers
+      
+      // SHOW ANSWERS
+      
+      show-answers 
+      @answer-list dom-set-html
+      show-answers -> @answer-list
+
+      // ADD AN ANSWER
+      
+      add-answer 
+        { $answers 
+        | poke {__in} path "#0"
+        | >$answers
+        | * (:key :answers :value __) }
+
+      add-answer -> @local-write
+      add-answer -> {__.value} -> show-answers
+      
+      // ADD SEVERAL ANSWERS
+      
+      collect-answers
+        { $answers | count | >user-id
+        | $time | else {time stampwrap | __.stamp} | >time     / $time is pretty silly
+        | __in
+        | map block "{ _value
+                     | poke _user-id path :user 
+                     | poke _time path :time}"
+              with {* (:user-id _user-id :time _time)}
+        | do "{_value | >@send}"
+        }
+      
+      collect-answers.send -> add-answer
+
+      // GET BOTS
+      
+      @init -> {:bots} -> @local-read-req
+      local-shuffle.bots -> {__ | >$bots} -> show-bots
+      
+      // ADD BOT
+
+      bot-add 
+        { $bots 
+        | poke {__in | list remove by_key :submit | map block "{__ | string trim}"} 
+        | * (:key :bots :value __) }
+
+      @newbot   dom-on-submit
+      @newbot -> bot-add -> @local-write
+      bot-add -> {__.value} -> show-bots
+    
+      // SHOW BOTS
+      
+      show-bots
+      @bot-list dom-set-html
+      show-bots -> @bot-list
+      
+      // TOGGLE BOT CODE
+      
+      @tweaker    tweak-style
+      @togglecode dom-on-click .toggle-code
+      @togglecode -> {"code{__}" | run | * (:id __ :attr :display :value :block)} -> @tweaker
+      
+      // RUN BOT
+      
+      run-bot {__ | $bots.{__}.code | string trim | unquote | run}
+      
+      @runbot dom-on-click .run
+      @runbot -> run-bot -> collect-answers
+      
+      // RUN LOTS O' BOTS
+      
+      bot-runner
+        { __ | >form
+        | _form.end_date | minus _form.start_date | >diff
+        | divide by {_form.iterations | minus 1 | max 1} 
+        | math round | >step
+       || range _form.iterations start 0
+        | do "{ _value | times _step | add _start | >$time
+              | _active | do "{__ | >@run | process sleep for 50}"}"
+          with {* (:step _step :start _form.start_date :active _form.active)}
+        }
+      
+      @activate-bots dom-on-submit
+      @activate-bots -> bot-runner
+      bot-runner.run -> run-bot
+  </script>
+
+
+  <script type="text/javascript">
+
+    // ok. so let's make a localstorage thing. we should use downports and dedicated read/write commands, 
+    // but instead we'll just fake it with an in/out/out (read-in/read-req/write) until we have downports.
+    
+    D.import_port_flavour('local-read-in', {
+      dir: 'in',
+      outside_add: function() {
+        // yes, this is super weird, but we're just hacking around the lack of downports.
+        D.Etc.local_read_port = this
+      }
+    })
+    
+    D.import_port_flavour('local-read-req', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        var result = JSON.parse(localStorage.getItem(ship)) || []
+        if(D.Etc.local_read_port)
+          D.Etc.local_read_port.enter({key: ship, value: result})
+      }
+    })
+    
+    D.import_port_flavour('local-write', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        localStorage.setItem(ship.key, JSON.stringify(ship.value))
+      }
+    })
+    
+    D.import_port_flavour('tweak-style', {
+      dir: 'out',
+      outside_exit: function(ship) {
+        try {
+          var el = document.getElementById(ship.id)
+          if(!el) return false
+
+          el.style[ship.attr] = ship.value        
+        } catch(e) {}
+      }
+    })
+    
+    
+    document.addEventListener('DOMContentLoaded', function() {      
+      OuterSpace = D.make_me_a_space_as_fast_as_you_can() // published for debug
+      D.send_value_to_js_port(OuterSpace, 'init', 1)
+    })
+    
+    
+    /* 
+    
+    
+    ok. not quite as good, but you did all right.
+    today you're going to:
+    -- hook user into the answers
+    -- hook (variable) timestamp into the answers
+    -- integrate with analysis
+    -- make a 'run bots lots' thing:
+      -- toggle code textarea
+      -- list of bots to run v1: xlist
+      -- start / end date fields
+      -- number of iterations
+    -- add good bots (copy them into here)
+    -- make a lot of answers
+    - start on widgets:
+      - add bot runner to reports page
+      - add simple div graphs
+      - create data structure for representations...
+      
+    
+    
+    
+    ok. good work. 
+    so today your job is to make bots work. 
+    -- you'll need a demonstration answer.
+    -- and a bot entry form.
+    and a way to run the bots and add answers
+      in particular run a subset N times.
+    and you'll want to overview the answers you've added to localstorage
+    
+    then, mix those in with the *real* answers from mongodb.
+    then figure out the IR for widget output.
+    
+    Male Toronto 70s Yesbot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >three
+    | (_one _two _three) }
+    
+    Female Toronto 70s Yesbot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 0 :choices (:Yes :No) :birthyear _year :LGBTQ :Yes :ontario :Yes  
+         :town :Toronto  :pronoun :she) | >three
+    | (_one _two _three) }
+    
+    Male Toronto 70s Nobot
+    { math random max 10 | add 1969 | >year
+    | * (:pq :529cea2caa77c4b20a00000c :question "Are schools working to support the mental health of youth?" 
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >one
+    | * (:pq :529cea53aa77c4ba0a00000c :question "Is media working to support the mental health of youth?" 
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >two
+    | * (:pq :529cea80aa77c4b10a000007 :question "Are communities working to support the mental health of youth?"
+         :answer 1 :choices (:Yes :No) :birthyear _year :LGBTQ :No  :ontario :Yes  
+         :town :Toronto  :pronoun :he) | >three
+    | (_one _two _three) }
+    
+    
+    
+    */
+    // add time and user id 
+    
+    // @init -> {:foo} -> @local-read-req
+    // @local-read-in -> {__ | * (:key :foo :value {__ | add 1})} -> @local-write
+    
+  </script>
+  
+  {end js}
+
+</body>
+</html>

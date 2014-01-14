@@ -1,0 +1,29 @@
+<script src="js/snap.svg.js"></script>
+<script src="js/pizza.js"></script>
+<script src="{@SITE.path}/js/jDaimio.js"></script>
+{begin js | process escape}
+  <script>
+  Pizza.init(document.body, {
+    donut: true,
+    donut_inner_ratio: 0.4,   // between 0 and 1
+    percent_offset: 0,       // relative to radius
+    stroke_color: '#333',
+    stroke_width: 0,
+    show_percent: false,       // show or hide the percentage on the chart.
+    animation_speed: 500,
+    animation_type: 'elastic' // options: backin, backout, bounce, easein, 
+  });
+  
+  $(document).ready(function(){
+    $('form#sound-off-step-1-form').on('submit',function(e){
+      e.preventDefault();
+      $(this).daimioSubmit(function(){
+        $('#sound-off-step-1').modal('hide')
+        $('#sound-off-step-1').on('hidden.bs.modal', function (e) {
+          $('#sound-off-step-2').modal()
+        });
+      });
+    });
+  });
+  </script>
+{end js}

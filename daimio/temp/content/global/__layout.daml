@@ -1,1 +1,56 @@
-{%header} {%copy} {%footer}
+{%global/header}
+<body id="" data-spy="scroll">   
+  
+  {%nav}
+
+
+  {%layout} 
+  <div id="footer">
+    <div class="container">
+      <footer>
+        <div class="row">
+          <div class="col-md-6">
+            <p>&copy; {@metadata.company.name} {time represent as :Y}</p>
+            <div class="socialbar_transparent borderless">
+              <ul class="ss sscircle">
+                <li class="twitter"><a class="" href="#">@{my.social.twitter}</a></li>
+                <li class="facebook"><a class="" href="#">@{my.social.twitter}</a></li>
+              </ul>  
+            </div>
+            
+          </div>
+          <div class="col-md-6">
+            
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="list-unstyled pull-right" id="extras">
+                  <li><a href="#">Contact the SSO</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+                </ul>           
+              </div>
+              <div class="col-md-6">
+                <p class="pull-right">
+                  <img src="{@SITE.path}/images/sso_logo_white.png" class="img-responsive">
+                </p>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div> <!-- /container -->
+  </div>
+  
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="{@SITE.path}/js/bootstrap.min.js"></script>
+
+  <!-- // TypeKit -->
+
+  <script type="text/javascript" src="//use.typekit.net/yuq4vhj.js"></script>
+  {begin js | process escape}<script type="text/javascript">try{Typekit.load();}catch(e){}</script>{end js}
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    {%bonus_js}
+  </body>
+  </html>

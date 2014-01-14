@@ -1,0 +1,23 @@
+<div class="navbar navbar-inverse" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand hide" href="#">SSO: Sound OFF!</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#">Stories</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Sound Off! Days</a></li>
+        <li><a href="#">Partners</a></li>
+      </ul>
+      <p class="navbar-text pull-right">Got a mental health question? <a href="#">Don't wait and ask an expert!</a></p>
+    </div><!--/.navbar-collapse -->
+  </div>
+</div>

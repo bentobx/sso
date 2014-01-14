@@ -1,0 +1,131 @@
+<div class="container">
+  
+  <div class="page-header">
+    <h2>Get Involved</h2>
+  </div>
+  
+  
+  
+  <p class="section-lead">Take action with youth across Ontario by raising awareness about mental health issues or becoming part of our cause. <br><strong>Here&#8217;s what you can do:</strong></p>
+  
+  <div class="row">
+    
+    
+    <div class="col-md-8">
+      <h4>Join our Street Team</h4>
+      <div class="row">
+        <div class="col-md-4">
+          <img src="{@SITE.path}/images/get_involved_1.gif" class="img-responsive">
+        </div>
+        <div class="col-md-8">
+          <p class="lead">Raise awareness, engage your peers in the conversation and set the direction that <span class="caps">SOUND OFF</span> will take next.</p>
+        </div>
+      </div>
+      <hr>
+      <h4>Get Creative</h4>
+      <div class="row">
+        <div class="col-md-4">
+          <img src="{@SITE.path}/images/get_involved_2.gif" class="img-responsive">
+        </div>
+        <div class="col-md-8">
+          <p class="lead">Start an art project to raise awareness about mental health.</p>
+        </div>
+      </div>
+      <hr>
+      <h4>Host an event</h4>
+      <div class="row">
+        <div class="col-md-4">
+          <img src="{@SITE.path}/images/get_involved_3.gif" class="img-responsive">
+        </div>
+        <div class="col-md-8">
+          <p class="lead">Dedicate an entertainment, sporting or fundraiser event to the cause to get others taking action on mental health.</p>
+        </div>
+      </div>
+    </div>
+      
+  
+    <div class="col-md-4">
+      {notice get_new | > :notice | ""}      
+      {begin contactform}
+        <form method="post" accept-charset="UTF-8" enctype="multipart/form-data" id="contact">        
+          <a name="contact" id="contact"></a> 
+  
+          <fieldset>
+            <h4>Contact Us</h4>
+            <div class="row">
+              <div class="col-md-12 col-xs-12">
+                <div class="form-group">      
+                  <label class="form-label" for="input01">Name</label>
+                  <div class="controls">
+                    <input type="text" class="form-control input-lg" id="" name="message[name]">
+                  </div>            
+                </div>
+              </div> 
+            
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-xs-12">
+                <div class="form-group">      
+                  <label class="form-label" for="email">Email</label>
+                  <div class="controls">
+                    <input type="text" class="form-control input-lg" id="email" name="message[email]">
+                  </div>            
+                </div>            
+                <div class="form-group">
+                  <label class="form-label" for="textarea">Comments</label>
+                  <div class="controls">
+                    <textarea class="form-control input-lg" id="textarea" rows="4" name="message[comments]"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div> 
+              
+            <button class="btn btn-lg btn-primary">Send Message</button>
+          </fieldset>
+          <textarea name="commands" style="display:none">
+              
+              
+            {begin verbatim | process escape}
+                
+              {#message.email | > :good_data}
+                
+              {begin good | if @good_data}
+                {exec admin_send_email
+                  subject {"[Information Request] Comments from {#message.name}"}
+                  body {%template/email/message_from_site}
+                | process consume}}
+                {stuff add type :web_message | > :message_id}
+                  
+                {begin message | foreach with #message}        
+                  {exec admin_depot_set for @message_id in :stuff path key value value}
+                {end message}
+                {notice set value {* (
+                  :message "<strong>Success!</strong>  We've received your message and we'll get back to you soon."
+                  :type :success
+                )}}
+                {page redirect to "{@SITE.path/#contact-thanks}"}
+              {end good}
+  
+  
+              {begin derp}
+                <strong>Whoops!</strong> Please fill out the <strong class="required">required</strong> fields.
+              {end derp}
+              {@good_data | not | then "{notice set value {* (:message $derp :type :error)}}"}
+            {end verbatim}
+            
+          </textarea>
+        </form>
+      {end contactform}
+        
+        
+      {begin thankyou | if @notice | else $contactform}
+        <div id="contact-thanks" name="contact-thanks">
+          <h2>Thanks</h2>
+          <p>We&#8217;ve received your message and will be in touch with you shortly.</p>
+        </div>
+      {end thankyou}
+  
+    </div>
+          
+  </div>
+</div>

@@ -82,15 +82,13 @@
      //    | filter block $user-filter
      //  --> if user-filter is empty, filter returns whole input }
 
-    {begin url | >url ||}https://chart.googleapis.com/chart?cht=bvs&chbh=a&chds=0,{
-          $list | math max
-        }&chd=t:{
-          range 14 | subtract 1 | map block "{$list.{__} | else 0}" | join on "," 
-        }&chs=400x200&chco=4D89F9&chxt=x,y{end url}
+    {begin chart | each data { $list | math max | divide value 400 | >multiplier
+                            || range 14 | minus 1 
+                             | map block "{$list.{__} | times _multiplier}" 
+                                   with {* (:multiplier _multiplier)}}}
+      <div style="height:20px; width:{_value}px; background-color: hsl({_key | times 27},100%, 50%);"></div>
+    {end chart}
 
-    <p></p>
-
-    <img src="{_url}" id="stuff" width="400" height="200">
   </div>
   
 
@@ -284,48 +282,6 @@
 
 
 
-  <h2>Question picker with simple graph</h2>
-  <select id="asciipicker"></select>
-  
-  <pre id="asciichart"></pre>
-
-  <script type="text/daml" class="spaceseeds">
-    outer
-      @asciipicker-in   dom-on-change asciipicker
-      @asciipicker-out  dom-set-html  asciipicker
-      @asciichart       dom-set-html
-
-      asciipicker-load
-        {__.*.question | unique | each block "<option>{_value}</option>"}
-
-      asciifilter
-        { __ | >q
-        | $answers 
-        | filter block "{__.question | eq _q}" 
-                 with   {* (:q _q)} }
-
-      asciidraw
-        <table>
-          {begin block | each data __in.#1.choices with {* (:answers __in)}}
-            <tr>
-              <td>{ _value }</td>
-              <td>{ {* (:key _key)} | >scope
-                  | _answers
-                  | filter block "{ __.answer | eq _key }" 
-                           with _scope 
-                  | each block "*"
-                         with _scope }</td>
-            </tr>
-          {end block}
-        </table>
-        
-      answers-in -> asciipicker-load -> @asciipicker-out
-      answers-in -> {__.#1.question} -> asciifilter -> asciidraw -> @asciichart
-      @asciipicker-in  -> asciifilter
-  </script>
-
-
-
 
   <h2>Q vs A count</h2>
   <div id="bardiv"></div>
@@ -337,36 +293,12 @@
         {begin qs | each data {__in | group by :question}}
           {__ | group by :answer | >agroup ||}
           <p>{_key}</p>
-          <div style="height:20px; width:{_agroup.#1 | count}px; background-color:pink">Yes</div>
-          <div style="height:20px; width:{_agroup.#2 | count}px; background-color:powderblue">No</div>
+          <div style="height:20px; width:{_agroup.#1 | count | >ag1}px; background-color:pink">Yes {_ag1}</div>
+          <div style="height:20px; width:{_agroup.#2 | count | >ag2}px; background-color:powderblue">No {_ag2}</div>
         {end qs}
 
       answers-in -> bardraw -> @bardiv
   </script>
-
-
-
-  <h2>A basic list of questions</h2>
-  <div id="basiclist"></div>
-  <script type="text/daml" class="spaceseeds">
-    outer
-      @basiclist dom-set-html
-
-      basiclist 
-        {begin choices | >choices ||}
-          <p>
-            {_value}: {_answers | filter block "{__.answer | eq _key}" with {* (:key _key)} | count}
-          </p>
-        {end choices}
-
-        { __ | group by :pq 
-        | each block "<h3>{_value.#1.question}</h3> 
-                      {_value.#1.choices | do _choices with {* (:answers _value)}}" 
-               with {* (:choices _choices)} }
-
-      answers-in -> basiclist -> @basiclist
-  </script>
-
 
 
   <h2>Compact Answers:</h2>
@@ -381,12 +313,6 @@
       answers-in -> compact -> @compact
   </script>
 
-
-<!--
-  <h3>An Answer:</h3>
-  <div id="answers-out">...</div>
--->
-  
   
 
   <script type="text/javascript">
@@ -399,7 +325,6 @@
     })
   </script>
   {end js}
-
 
 
 
@@ -469,37 +394,12 @@
 
       // GET ANSWERS
       
-      answers-in {__ | >$answers}
+      save-answers {__ | >$answers}
+      answers-in {__}
 
       @init -> {:answers} -> @local-read-req
       @local-read-in -> local-shuffle
-      local-shuffle.answers -> answers-in
-
-      // ADD AN ANSWER
-
-      add-answer 
-        { $answers 
-        | poke {__in} path "#0"
-        | >$answers
-        | * (:key :answers :value __) }
-
-      add-answer -> @local-write
-      add-answer -> {__.value} -> answers-in
-
-      // ADD SEVERAL ANSWERS
-
-      collect-answers
-        { $answers | count | >user-id
-        | $time | else {time stampwrap | __.stamp} | >time     / $time is pretty silly
-        | __in
-        | map block "{ _value
-                     | poke _user-id path :user 
-                     | poke _time path :time}"
-              with {* (:user-id _user-id :time _time)}
-        | do "{_value | >@send}"
-        }
-
-      collect-answers.send -> add-answer
+      local-shuffle.answers -> save-answers -> answers-in
 
       // GET BOTS
 
@@ -529,12 +429,12 @@
       @togglecode dom-on-click .toggle-code
       @togglecode -> {"code{__}" | run | * (:id __ :attr :display :value :block)} -> @tweaker
 
-      // RUN BOT
+      // REMOVE ANSWERS
+      
+      @clear-answers dom-on-submit
+      @clear-answers -> {* (:key :answers :value ())} -> @local-write
+      @clear-answers -> {()} -> save-answers
 
-      run-bot {__ | $bots.{__}.code | string trim | unquote | run}
-
-      @runbot dom-on-click .run
-      @runbot -> run-bot -> collect-answers
 
       // RUN LOTS O' BOTS
 
@@ -544,20 +444,53 @@
         | divide by {_form.iterations | minus 1 | max 1} 
         | round | >step
        || range _form.iterations start 0
-        | do "{ _value | times _step | add _start | >$time
-              | _active | do "{__ | >@run | process sleep for 100}"}"
-          with {* (:step _step :start _form.start_date :active _form.active)}
+        | do "{ _value | times _step | add _start | >time
+              | _bot-ids
+              | do  "{* (:bot-id __ :time _time) | >@run | wait}"
+                with {* (:time _time)} }"
+          with {* (:step _step :start _form.start_date :bot-ids _form.active)}
         }
 
       @activate-bots dom-on-submit
       @activate-bots -> bot-runner
       bot-runner.run -> run-bot
       
-      // REMOVE ANSWERS
+      // RUN BOT
+
+      run-bot 
+        { __.time | >time
+        | __in.bot-id | >id
+        | $bots.{_id}.code | string trim | unquote | run
+        | * (:answers __ :time _time :user-id {_time | times _time | add {math random max 10000}} )
+        }
+        
+      @runbot dom-on-click .run
+      @runbot -> {* ( :bot-id __ :time {time stampwrap | __.stamp} )} -> run-bot -> collect-answers
+
+      // ADD SEVERAL ANSWERS
+
+      collect-answers
+        { __.answers 
+        | map block "{ _value
+                     | poke _user-id path :user 
+                     | poke _time path :time}"
+              with {* (:user-id __in.user-id :time __in.time)}
+        | do "{_value | >@send}"
+        }
+
+      collect-answers.send -> add-answer
+
+      // ADD AN ANSWER
+
+      add-answer 
+        { $answers 
+        | poke {__in} path "#0"
+        | >$answers
+        | * (:key :answers :value __) }
+
+      add-answer -> @local-write
+      add-answer -> {__.value} -> answers-in
       
-      @clear-answers dom-on-submit
-      @clear-answers -> {* (:key :answers :value ())} -> @local-write
-      @clear-answers -> {()} -> answers-in
   </script>
 
 

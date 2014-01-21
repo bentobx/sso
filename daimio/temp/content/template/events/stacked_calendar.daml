@@ -1,0 +1,56 @@
+<div class="row years">
+  <div class="col-md-12">
+
+
+    <div class="year">
+      <h3 class="year">{value}</h3>
+      {begin months | merge with items}
+        <ul class="months list-unstyled">
+          <li class="month">
+            <h5 class="month">{value | time represent as "F"}</h5>
+            {begin articles | merge with items}
+              <ul class="events list-unstyled">
+                <li class="event">
+
+                  {ifelse ({{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} "{"oneday" | > :type | ""}" :default "{"multiday" | > :type | ""}")}
+
+                  <div class="container">
+                    <div class="row"> 
+                      <span class="col-md-2">
+                        <p class="date pull-right">
+
+                          {begin multiday}
+                            {start_date | time represent as "D d"}
+                            {begin end_date | if {:0000 | is in end_date | not}}
+                              - {end_date | time represent as "D d"}
+                            {end end_date}  
+                          {end multiday}
+
+                          {begin oneday | if {{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} | else $multiday}
+
+
+                          {start_date | time represent as "D d"}
+                        {end oneday}
+
+                      </p>
+                    </span>
+                    <span class="col-md-10">
+                      <a class="title" title="{name}" href="{@SITE.path}/events/{key | else _id}">{name}</a>
+                      {/start_date | time represent as "Hi" | is like :0000 | then "All day" else "{start_date | time represent as "g:i a"}"}
+                    </span>
+                  </div>
+                </div>
+
+
+
+              </li>
+            </ul>
+          {end articles}
+        </li>
+      </ul>
+    {end months}
+  </div>
+
+  </div>
+</div>
+

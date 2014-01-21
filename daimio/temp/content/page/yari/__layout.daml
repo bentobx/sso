@@ -1,0 +1,73 @@
+{/ THIS IS THE LAYOUT FOR YARI }
+{%metadata | process consume | ""}
+{%global/__data | process consume | ""}
+{%template/yari/admin/header}
+<body id="yari">
+  {%page/yari/navbar}
+  <div class="container">
+    <div id="content">
+      {%breadcrumbs}
+      {%custom_layout | else "{%copy | else %content}"}
+      
+      {begin logged_out | if {@MY.id | not}}
+        <form method="post" accept-charset="UTF-8" name="loginForm" id="login-form" class="form-vertical">
+
+          <div class="modal fade" id="login-modal">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+
+                  <h4 class="modal-title">Log in to Yari, the DMG.to member site</h4>
+                </div>
+                <div class="modal-body">
+                  {%global/notices}
+          
+
+                  {/ Form body}
+                  <div class="form-group clearfix">
+                    <div class="col-md-6 {@ERRORS.myself.authenticate | then :has-error}">
+                      <label for="" class="form-label">Username</label>
+                      <input type="text" class="form-control" name="username">
+                    </div>
+          
+                    <div class="col-md-6 {@ERRORS.myself.authenticate | then :has-error}">
+                      <label for="" class="form-label">Password</label>                      
+                      <input type="password" class="form-control" name="password">
+                      <p class="help-block"><a href="{@SITE.path}/yari/member/account/change-password">Forgot your password?</a></p>              
+                    </div>
+                  </div>
+                 
+
+                  <textarea name="commands" style="display:none">
+                    {begin verbatim | process escape}
+                      {begin success | if {myself authenticate username #username password #password days #days} else "{notice set value {* ( :message "<strong>Oops!</strong> Looks like you mistyped your username or password! Please try again." :type :danger)}}"}
+
+                      {end success}
+                    {end verbatim}
+                  </textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" name="login_form_submit" value="Log In" id="login_form_submit" class="btn btn-primary btn-lg submit">Log in</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        </form>
+      {end logged_out}
+      {/ check check?}
+      {/if not admin, don't show this:}
+
+    </div>
+  </div>
+
+  {%page/yari/bonus_js}  {// including both of these double-calls $('#calendar').fullCalendar //}
+  {%bonus_js}            {// but I don't know which one to remove... //}
+  {%template/yari/admin/footer}
+  {%global/logout}
+  
+  {begin js | process escape}
+    <script type="text/javascript" src="//use.typekit.net/mee3hoq.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  {end js}
+</body>
+</html>

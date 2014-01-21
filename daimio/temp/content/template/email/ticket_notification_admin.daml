@@ -1,0 +1,12 @@
+{#firstname} {#lastname} has registered for {#event_name}.
+
+--
+{#firstname} {#lastname} ({#email})
+Plan: {#plan | else "Not a member"}
+{begin paid | if #amount}Paid: ${#amount | string transform old "/(\d\d)$/" new ".$1"}{end paid}
+{begin coupon | if #promocode}Coupon: {#promocode}{end coupon}
+{#event_name}
+{@SITE.path}/events/{#event_id}
+--
+
+- DMGbot

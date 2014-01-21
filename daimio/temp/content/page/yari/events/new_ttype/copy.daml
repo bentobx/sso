@@ -1,0 +1,40 @@
+{@event}
+
+<p>Note: Ticket types are global and usable by any event in the system.</p>
+{/ KEY }
+<div class="title form-group">
+  <label for="title" class="control-label">Key</label>
+  <input type="text" name="key" id="key" class="col-md-6" value="">
+  <p class="help-block">The ticket type's unique single word key.</p>
+</div>
+
+
+
+
+{/ NAME }
+<div class="title form-group">
+  <label for="title" class="control-label">Name</label>
+  <input type="text" name="name" id="name" class="col-md-6" value="">
+  <p class="help-block">The name of this ticket type (displayed to users).</p>
+</div>
+
+
+{/ CONDITIONS 
+<div class="title form-group">
+  <label for="title" class="control-label">Conditions</label>
+  <textarea name="conditions" id="conditions" class="col-md-6"></textarea>
+  <p class="help-block">DAML command(s). Leave blank if there are no conditions on this ticket type.</p>
+</div>}
+
+
+
+<textarea name="commands" style="display:none">
+  {begin verbatim | process escape}
+    {exec add_ttype key #key name #name | > :ttype}
+    {begin success | if @ttype}
+      {notice set value {* ( :message "<strong>Success!</strong> You've added a ticket type." :type :success)}}      
+    {end success}
+  {end verbatim}
+</textarea>
+
+

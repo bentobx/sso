@@ -1,0 +1,44 @@
+{begin layout | merge with (@event) | if {permit i_can has (:events #id) to :view} else "<span class='alert alert-danger'>You do not have permission to view attendees for this event.</span>"}
+
+  <a href="{@SITE.path}/yari/events/{#id}/attendees/print" class="btn btn-default btn-small pull-right"><span class="glyphicon glyphicon-print"></span> Print</a>
+
+<div class="page-header">
+    <h3>Attendees</h3>
+</div>
+
+  {begin no_attendees}
+    <div class="alert alert-warning">There are no attendees yet.</div>  
+  {end no_attendees}
+  {begin attendee_wrapper | if @profiles else $no_attendees}
+
+    <ul class="list-unstyled">  
+      {begin attendees | merge with @profiles}
+        <li>
+          <strong>{my.firstname} {my.lastname}</strong>
+
+          <dl class="dl-horizontal">
+            {begin tickets | merge with @tickets.{_id}}
+              <dt>{@ttypes.{type} | __.name}</dt>
+              <dd>
+                <form method="POST">
+                  <input type="hidden" name="ticket_id" value="{_id}">
+                  <input type="submit" name="logout_button" value="Cancel Ticket" class="btn btn-mini btn-danger" id="logout_button">
+                  <textarea type="hidden" name="commands" id="commands" style="display:none;">
+                    {begin verbatim | process escape} 
+                      {begin success | if {ticket cancel id #ticket_id}}
+                        {notice set value {* (
+                          :message "<strong>Success!</strong>  That ticket has been canceled."
+                          :type :success
+                        )}}
+                      {end success}
+                    {end verbatim}
+                  </textarea>
+                </form>
+              </dd>
+            {end tickets}
+          </dl>
+        </li>
+      {end attendees}
+    </ul>
+  {end attendee_wrapper}
+{end layout}

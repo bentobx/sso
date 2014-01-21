@@ -1,0 +1,131 @@
+{ticket find_types by_ids @event.ttypes._id | > :ticket_types | ""}
+
+{begin layout | merge with (@event)}
+  {@ticket_types | prune "{this.key | is in @event.ttypes.key}" | > :unattached_ttypes | ""}  
+  <div class="row">
+    <div class="col-md-6">
+        
+      <form method="post" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+          
+        <h4>Attach a Ticket Type</h4>  
+        <div class="title form-group">
+          <select id="location" data-placeholder="Select a room" tabindex="3" class="form-control" name="ttype_id">      
+            {begin type_selection | merge with @ttypes}
+              <option value="{_id}">{name}</option>
+            {end type_selection}
+          </select>
+        </div>
+        <input type="hidden" name="event_id" value="{#id}">
+        <textarea name="commands" style="display:none">
+          {begin verbatim | escape}      
+            {#ttype_id | event add_ttype id #event_id}
+          {end verbatim}
+        </textarea>
+        <button type="submit" class="btn btn-primary">Attach <span class="glyphicon glyphicon-paperclip"></span></button>  
+      </form>
+      <hr>
+      <h4>Add a New Ticket Type</h4>
+      <a href="{@SITE.path}/yari/events/new_ttype" data-toggle="modal" data-target="#add-ttype" class="btn btn-small btn-success"><span class="glyphicon glyphicon-plus"></span>  New Ticket Type</a>
+    </div>
+    <div class="col-md-6">
+      <form method="post" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+        <h4>Attached Tickets</h4>
+        <table class="table table-striped table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {begin type_selection | merge with @ticket_types}
+              <tr>
+                <td>
+                  {name}
+                  {conditions | then "<em>Conditions</em>"}
+                </td>
+                <td>
+                  <input type="text" name="ttypes[{key}][price]" value="{@event.ttypes.{key} | then @event.ttypes.{key}.price | else ""}" id="" class="form-control">
+                </td>
+                <td>
+                  <input type="text" name="ttypes[{key}][capacity]" value="{@event.ttypes.{key} | then @event.ttypes.{key}.capacity | else ""}" id="" class="ttype-quantity form-control">
+                  <input type="hidden" name="ttypes[{key}][id]" value="{_id}" id="">
+                  <input type="hidden" name="ttypes[{key}][key]" value="{key}" id="">
+                </td>
+              </tr>
+            {end type_selection}
+                    
+          </tbody>
+
+        </table>  
+  
+  
+  
+        <fieldset class="form-horizontal">
+
+          <div class="row">
+            <div class="col-md-3 col-md-offset-5">
+              <label for="capacity" class="control-label">Capacity</label>
+            </div>
+            <div class="col-md-4">
+              <div class="capacity {@ERRORS.event.set_capacity | then :error}">
+                <input type="text" name="capacity" id="" class="form-control" value="{ifelse ({@POST.capacity} "{@POST.capacity}" {capacity} "{capacity}" :default :100)}">
+                {begin help | if @ERRORS.event.set_capacity}
+                  <p class="help-block">{@ERRORS.event.set_capacity.#1}.</p>                
+                {end help}
+              </div>
+            </div>
+          </div>
+          <p class="help-block">Total capacity can be less than the total number of tickets.</p>
+            
+        </fieldset>
+  
+       
+        <hr>
+
+
+        
+        
+        
+        <input type="hidden" name="event_id" value="{#id}">
+        <textarea name="commands" style="display:none">
+          {begin verbatim | escape}      
+            {/ Do ticket type stuff}
+            {/ Find current attached ttypes }
+            {event find by_ids #event_id | __.#1 | > :event | __.ttypes.key | > :event_ttype_keys}
+            {@event | event set_capacity value #capacity}
+            {begin add_ttypes | foreach with #ttypes}
+              {begin modify}
+                {event set_ttype_price id #event_id value value.price ttype value.id}
+                {event set_ttype_capacity id #event_id value value.capacity ttype value.id}                    
+              {end modify}
+              {begin add}
+                {begin sandwich | if value.capacity}
+                  {value.id | event add_ttype id #event_id}
+                  {$modify}
+                {end sandwich}
+              {end add}
+              {begin edit_ttype}
+                {/ TODO or type is :none }
+                {begin remove | if {:0 | logic less than value.capacity | not} else $modify}
+                  {value.id | event remove_ttype id #event_id}
+                {end remove}
+              {end edit_ttype}   
+              {/ Attach/edit ttypes }
+              {if {key | is in @event_ttype_keys} then $edit_ttype else $add}
+            {end add_ttypes}
+          {end verbatim}
+        </textarea>
+        <button type="submit" class="btn btn-primary">Save Tickets</button>
+
+  
+      </form>
+    
+    </div>
+  </div>
+  
+  
+  {{* (:modal_id :add-ttype)} | (__) | merge string %template/components/bs3_modal}
+{end layout}

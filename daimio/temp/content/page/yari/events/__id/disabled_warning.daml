@@ -1,0 +1,3 @@
+{begin warning | if {permit i_can has (:events #id) to :edit | not}}
+  <div class="alert alert-warning">This event is currently {@event.square} and cannot be edited.</div>
+{end warning}

@@ -1,0 +1,16 @@
+<div class="hidden-xs">
+  <h3>Coming Up</h3>
+  <div class="events">
+    {merge string %template/events/simple_list with @future}
+  </div>
+  {begin more_events}
+
+    <p><a href="{@SITE.path}/events" class="mono more-link">More events...</a></p>
+
+  {end more_events}
+
+
+  {begin no_articles | if {@future | not} else "{$more_events}"}
+    <p>There are no upcoming events.</p>
+  {end no_articles}
+</div>

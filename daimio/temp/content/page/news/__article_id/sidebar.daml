@@ -1,0 +1,21 @@
+<div class="hidden-xs">
+  <h3>Recent Posts</h3>
+<div id="blog-nav">
+  {/ this date list needs to limit the number of articles returned. organizing should maybe happen in the model. this could easily be cached. a calendar would be more useful in a lot of cases.}
+
+  {article find options {* (:limit :10 :sort {* (:pubdate "-1")})} | > :archive | ""}
+
+
+  {begin articles | merge with @archive}
+    <ul class="articles list-unstyled">
+      <li class="article-title">
+        <p>
+          <small>{pubdate.sec | time represent as "F j, Y"}</small><br>
+          <a href="{@SITE.path}/news/{key}" title="{title}">{name}</a>
+        </p>
+      </li>
+    </ul>
+  {end articles}
+</div>
+
+</div>

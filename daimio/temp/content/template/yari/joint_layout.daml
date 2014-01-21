@@ -1,0 +1,1 @@
+{#1 | is like :blog | then "{%template/yari/news/layout}" | #1 | is like :yari | then "{%template/yari/admin/layout}"}

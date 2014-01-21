@@ -1,0 +1,4 @@
+{%page/news/__data}
+{article find by_ids #article_id | else {article find by_key #article_id} | > :article}
+{lens profile_find id @article.author | __.#1 | > :author}
+{@article.#1.files | collection remove path :jumbotron | > :sidebar}

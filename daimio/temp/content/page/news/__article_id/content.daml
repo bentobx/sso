@@ -1,0 +1,12 @@
+{begin post | merge with @article}
+  <div class="row">
+    <div class="col-md-8">
+      <div class="post_body">    
+        {depot.body | string textile}
+      </div>
+    </div>
+    <div class="col-md-4">
+      {%sidebarb}
+    </div>
+  </div>
+{end post}

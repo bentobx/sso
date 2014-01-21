@@ -1,0 +1,90 @@
+{begin layout | merge with (@event) | if {permit i_can has (:events #id) to :view} else "<span class='alert alert-danger'>You do not have permission to view this event's organizers.</span>"}
+  {pcache.edit | grep "user" | string transform old "user:" new "" | lens profile_find by_ids | > :perm_peeps | ""}
+  {/ Permissions }
+  <h3>Permissions</h3>
+  
+  {begin warning_perms | if {and ({permit i_can has (:events #id) to :edit} {square | is like :draft}) | not}}
+    <div class="alert alert-warning">This event is published, so you can't change the organizers.</div>
+  {end warning_perms}
+  
+  
+  
+  <div class="row">
+
+
+    <div class="col-md-6">
+      <div class="title form-group">
+        <h4>Primary Organizer</h4>
+        <p>The primary organizer is the member ultimately responsible for this event.</p>
+        {begin hidden_organizer}
+          <p class="primary-organizer">
+            {lens profile_find id {depot.organizer} | merge string "{my.firstname} {my.lastname}"}</>
+          </p>
+          <input type="hidden" class="form-control" name="organizer" value="{depot.organizer}" readonly>
+        {end hidden_organizer}
+        {begin change_organizer | if {:admin | is in @MY.keychain} else $hidden_organizer}
+
+
+          <form method="post" id="" class="form-inline {if {and ({permit i_can has (:events #id) to :edit} {square | is like :draft})} else :disabled}">
+            
+            <div class="form-group" id="perm-options">
+              <div class="controls">
+
+                <label for="title" class="form-label">
+                  <select id="organizer" data-placeholder="Start typing..." tabindex="3" class="form-control" name="organizer">
+                    {begin profiles | merge with @profiles} 
+                      <option value="{_id}" {depot.organizer | is like _id | then "selected"}>{my.firstname} {my.lastname}</option>
+                    {end profiles}
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" name="submit" value="Grant permission" class="btn btn-default">Change primary</button>
+            </div>                
+            <input type="hidden" name="event_id" value="{#id}">
+            <textarea name="commands" style="display:none">
+              {begin verbatim | escape}
+                {begin success | if {exec admin_depot_set for #event_id in :events path :organizer value #organizer}}
+                  {notice set value {* (:type :success :message "Primary organizer updated.")}}
+                {end success}
+              {end verbatim}
+            </textarea>
+
+          </form>
+        {end change_organizer}
+      </div>
+    </div>
+
+    <div class="col-md-6">
+
+      <h4>Other Organizers</h4>
+      <p>Add other organizers to this event. These members will be able to edit this event.</p>    
+      <form method="post" id="" class="form-inline {if {and ({permit i_can has (:events #id) to :edit} {square | is like :draft})} else :disabled}">
+        <div class="form-group" id="perm-options">
+
+          <select id="collaborators" multiple data-placeholder="Start typing..." tabindex="3" class="form-control" name="organizers[]">
+            {begin profiles | merge with @org_profiles} 
+              <option value="{_id}" {_id | is in organizers | then "selected"}>{my.firstname} {my.lastname}</option>
+            {end profiles}
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" name="submit" value="Grant permission" class="btn btn-primary">Save</button>
+        </div>                
+        <input type="hidden" name="event_id" value="{#id}">
+        <textarea name="commands" style="display:none">
+          {begin verbatim | escape}
+            {(#organizers @MY.id) | collection flatten | > :organizers}
+            {log @organizers}
+            {begin success | if {event set_organizers id #event_id value @organizers}}
+
+              {notice set value {* (:type :success :message "Organizers updated.")}}
+            {end success}
+          {end verbatim}
+        </textarea>
+      </form>
+    </div>
+
+  </div>
+{end layout}

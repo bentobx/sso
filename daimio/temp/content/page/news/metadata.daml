@@ -1,0 +1,9 @@
+{* (
+	:page { * (
+		:title "Dames Making Games Blog"
+		:description ""
+		:keywords ""		
+    :classes "overview"
+		:body-tags "short-header"    
+	)}
+	) | foreach string "{array union values (value @metadata.{key}) | > {"metadata.{key}"}}" }

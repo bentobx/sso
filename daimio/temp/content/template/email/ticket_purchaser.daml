@@ -1,0 +1,11 @@
+Hey, {#firstname}!
+
+This is confirmation that you've successfully registered for {#event_name}. You do not need to print this confirmation - your name is on our list!
+
+More information: {@SITE.path}/events/{#event_id}
+{begin paid | if #amount}Paid: ${#amount | string transform old "/(\d\d)$/" new ".$1"}{end paid}
+{begin coupon | if #promocode}Coupon: {#promocode}{end coupon}
+
+If you have any questions about this event, please do not hesitate to contact us at info@dmg.to. See you soon!
+
+-- Jennie & Cecily

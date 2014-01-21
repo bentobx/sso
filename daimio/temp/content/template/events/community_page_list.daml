@@ -1,0 +1,10 @@
+{ifelse ({{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} "{"oneday" | > :type | ""}" :default "{"multiday" | > :type | ""}")}
+<div class="row"> 
+  <span class="col-md-4">
+    <p class="date">{start_date | time represent as "D, M j, Y"}</p>
+  </span>
+  <span class="col-md-8{/@type | is like :multiday | then (:col-md-3 :col-offset-1) else :col-md-3}">
+    <h3><a class="title" title="{name}" href="{@SITE.path}/events/{key | else _id}">{name}</a></h3>
+    {/start_date | time represent as "Hi" | is like :0000 | then "All day" else "{start_date | time represent as "g:i a"}"}
+  </span>
+</div>

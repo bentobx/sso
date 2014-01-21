@@ -1,0 +1,3 @@
+<form method="post" id="" name="" class="{classes | foreach string "{value}" glue " "}" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+  <div class="modal fade" id="{modal_id}"></div><!-- /.modal -->
+</form>

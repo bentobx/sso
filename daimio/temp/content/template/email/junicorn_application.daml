@@ -1,0 +1,15 @@
+A new Junicorn application has been submitted:
+
+--
+{#email}
+
+{begin ham | foreach with #applicant.junicorn_applicants_2013}
+## {key}
+{value}
+
+{end ham}     
+
+
+--
+
+- DMGbot

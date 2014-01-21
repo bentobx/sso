@@ -61,7 +61,7 @@
 
 
 {/ ADD'L INFO ------------------------------------------ }
-<form method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal" action="{@SITE.path}/#get-involved">
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal" action="{@SITE.path}/#getinvolved">
   
   <div class="modal fade" id="sound-off-step-2">
     <div class="modal-dialog">

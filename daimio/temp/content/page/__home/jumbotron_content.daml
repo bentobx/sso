@@ -1,12 +1,12 @@
 <div class="row">
-  <div class="col-md-7">
+  <div class="col-md-6">
     <div id="lead">
       <h3>1 in 5 of us will experience a mental illness</h3>
       <p>Don't let silence or stigma define you. Your voice must be heard. <strong>What do Ontario's youth have to say about the state of mental health in the province?</strong></p>
     </div>
   </div>
-  <div class="col-md-5">
-    <img src="{@SITE.path}/images/bucket_drummer_placeholder.gif" alt="" class="center-block img-responsive">  
+  <div class="col-md-6">
+    <iframe width="560" height="315" src="//www.youtube.com/embed/HEn1DckAsp8" frameborder="0" allowfullscreen></iframe>
   </div>
 </div>
 <div class="text-center center-block">

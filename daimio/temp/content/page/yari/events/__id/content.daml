@@ -90,21 +90,7 @@
       </div>
 
     </section>
-    <section>
-  
-      <div class="page-header">
-        <h2>Registration Options</h2>
-      </div>
-      
-      <div class="form-group">
-        <label class="control-label" for="members">Members only?</label>
-        <div class="controls">
-          <label class="checkbox">
-            <input type="checkbox" name="members" value="true" {depot.members | is like :true | then "checked"}> This event is only for paid DMG members.
-          </label>
-        </div>
-      </div>
-  </section>
+    
 {/ buttons }
 
 

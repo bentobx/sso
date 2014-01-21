@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  {%metadata | proc | ""}  
+  {%global/metadata | proc | ""}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   <meta name="google-site-verification" content="">
@@ -17,4 +17,5 @@
 
   <link rel="stylesheet" href="{@SITE.path}/css/styles.css" type="text/css" media="screen" title="no title" charset="utf-8">  
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{@SITE.path}/rss/">
+  
 </head>

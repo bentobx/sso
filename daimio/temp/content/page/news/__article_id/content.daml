@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-8">
       <div class="post_body">    
-        {depot.body | string textile}
+        {depot.body | string markdown}
       </div>
     </div>
     <div class="col-md-4">

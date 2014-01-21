@@ -17,7 +17,7 @@
               <div class="modal-content">
                 <div class="modal-header">
 
-                  <h4 class="modal-title">Log in to Yari, the DMG.to member site</h4>
+                  <h4 class="modal-title">Log in to Yari, the Sound Off admin site</h4>
                 </div>
                 <div class="modal-body">
                   {%global/notices}

@@ -1,4 +1,7 @@
 {* (
+  :company {* (
+    :name "Schizophrenia Society of Ontario"
+    )}
   :site {* (
     :name "Sound Off! By the Schizophrenia Society of Ontario"
     :description ""

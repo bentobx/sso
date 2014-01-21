@@ -5795,12 +5795,8 @@ body h4 {
 }
 #footer {
   background: #17242f;
-  height: 300px;
   padding: 20px 0;
   margin-top: 50px;
-}
-#footer ul#extras {
-  margin-top: 30px;
 }
 #footer ul#extras li {
   text-align: right;
@@ -5814,7 +5810,7 @@ body h4 {
   text-decoration: none;
 }
 #footer p {
-  color: #60717f;
+  color: #95a4b0;
 }
 .jumbotron {
   padding-top: 30px;
@@ -5830,27 +5826,26 @@ body h4 {
   margin-bottom: 50px;
 }
 .jumbotron #lead {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.9);
   padding: 20px;
-  margin: 20px;
   color: #808080;
 }
 .jumbotron #lead h3 {
   margin: 0 0 10px 0;
-  font-weight: 500;
-  font-size: 26px;
-  color: #ffffff;
+  font-weight: 900;
+  font-size: 32px;
+  color: #000000;
 }
 .jumbotron #lead p {
   margin-bottom: 0;
-  color: #83a5c2;
+  color: #000000;
 }
 .jumbotron #lead p:first-child {
   margin-bottom: 20px;
 }
 .jumbotron #lead p strong {
-  color: #c7d7e4;
-  font-weight: normal;
+  color: #000000;
+  font-weight: 900;
 }
 .jumbotron #count {
   margin: 20px 0 0 0;
@@ -5904,22 +5899,22 @@ section {
   margin: 40px 0;
 }
 section#charts {
+  background: #eaeff4;
   margin-top: 0;
 }
 section#charts,
-section#get-involved {
-  background: #eaeff4;
+section#getinvolved {
   padding: 20px 0 40px 0;
 }
 section#charts hr,
-section#get-involved hr {
+section#getinvolved hr {
   border-top-color: #c9d6e2;
 }
 section#charts h2,
-section#get-involved h2 {
+section#getinvolved h2 {
   text-align: center;
 }
-section#get-involved h2 {
+section#getinvolved h2 {
   padding-top: 50px;
   text-align: left;
 }

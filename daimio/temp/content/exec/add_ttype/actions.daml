@@ -1,0 +1,3 @@
+{begin nullblock | process consume | @return}
+  {ticket add_type key key | ticket set_type_name value name | > :return}
+{end nullblock}

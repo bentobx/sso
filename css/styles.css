@@ -5761,6 +5761,7 @@ html {
 body {
   margin: 0;
   height: 100%;
+  padding-top: 50px;
 }
 body .btn {
   text-decoration: none;

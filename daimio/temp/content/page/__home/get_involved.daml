@@ -1,18 +1,11 @@
-<div class="container">
-  
+<div class="container">  
   <div class="page-header">
     <h2>Get Involved</h2>
   </div>
-  
-  
-  
-  <p class="section-lead">Take action with youth across Ontario by raising awareness about mental health issues or becoming part of our cause. <br><strong>Here&#8217;s what you can do:</strong></p>
-  
+  <p class="section-lead">Take action with youth across Ontario by raising awareness about mental health issues or becoming part of our cause. <br><strong>Here&#8217;s what you can do:</strong></p>  
   <div class="row">
-    
-    
     <div class="col-md-8">
-      <h4>Join our Street Team</h4>
+      <h4>Spread the Word</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_1.gif" class="img-responsive">
@@ -22,7 +15,7 @@
         </div>
       </div>
       <hr>
-      <h4>Get Creative</h4>
+      <h4>Express Yourself</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_2.gif" class="img-responsive">
@@ -32,7 +25,7 @@
         </div>
       </div>
       <hr>
-      <h4>Host an event</h4>
+      <h4>Change the System</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_3.gif" class="img-responsive">
@@ -42,14 +35,11 @@
         </div>
       </div>
     </div>
-      
-  
     <div class="col-md-4">
       {notice get_new | > :notice | ""}      
       {begin contactform}
         <form method="post" accept-charset="UTF-8" enctype="multipart/form-data" id="contact">        
           <a name="contact" id="contact"></a> 
-  
           <fieldset>
             <h4>Contact Us</h4>
             <div class="row">

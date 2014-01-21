@@ -304,7 +304,7 @@ EOT;
     
     // all clear!
     
-    mail($address, $subject, $body, 'From:info@dmg.to');
+    mail($address, $subject, $body, 'From:info@soundoffca.ca');
   }
   
 

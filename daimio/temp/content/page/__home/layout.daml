@@ -1,7 +1,9 @@
 {%jumbotron}
-<div class="container">
-  {%charts}
-</div>
-<div class="container">
-  {%copy}  
-</div>
+<section id="charts">
+  <div class="container">
+    {%charts}
+  </div>
+</section>
+
+{%copy}  
+

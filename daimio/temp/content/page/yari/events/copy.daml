@@ -1,0 +1,147 @@
+<div class="page-header">
+  <a href="{@SITE.path}/yari/events/new" data-toggle="modal" data-target="#add-event" class="pull-right btn btn-lg btn-primary">New Event</a>
+  <h1>Calendar</h1>
+</div> 
+
+<div id="my-events">
+  {begin modal_buttons}
+    <button type="submit" name="status" value="draft" class="btn btn-success"><span class="glyphicon glyphicon-ok glyphicon-white"></span> Save as Draft and Continue</button>
+  {end modal_buttons}
+
+  <div id="event_list">
+    <table class="table table-striped table-data">
+      <thead>
+        <tr>
+          <th class="title">Name</th>
+          <th class="date" colspan="2">Date</th>
+          <th class="id" colspan="2">ID</th>
+          <th class="actions" colspan="2">ID</th>
+        </tr>
+      </thead>
+      <tbody>
+
+
+        {begin events | merge with @all_events}
+          <tr>
+            <td><a href="{@SITE.path}/yari/events/{_id}">{name}</a> <span class="label">{depot.status}</span></td>
+            <td>{start_date.sec | time represent as "M d, Y"}</td>
+            <td>{_id}</td>
+            <td>
+              <form method="POST" id="replicate" class="form-inline">
+                <input type="hidden" name="event_id" value="{_id}">
+                <textarea type="hidden" name="commands" id="commands" style="display:none;">
+                  {begin verbatim | process escape} 
+                    {event replicate id #event_id | > :event_id}
+                    {begin success | if @event_id}
+                      {exec set_event_depot event_id @event_id value @MY.id path :organizer}            
+                      {exec set_event_depot event_id @event_id value :draft path :status}                                      
+                      {notice set value {* ( :message "<strong>Success!</strong> Your event has been replicated!" :type :success)}}  
+                      {page redirect to {"yari/events/{@event_id}"}}        
+                    {end success}
+                  {end verbatim}
+                </textarea>
+
+                <div class="btn-group pull-right dropup">
+                  <a class="btn dropdown-toggle " data-toggle="dropdown" href="#">
+                    <span class="glyphicon glyphicon-cog"></span> 
+                  </a>          
+                  <ul class="dropdown-menu">
+
+                    <li><a href="{@SITE.path}/events/{_id}"><span class="glyphicon glyphicon-zoom-in"></span> View</a></li>
+                    <li><a href="{@SITE.path}/yari/events/{_id}"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
+                    <li><a onclick="$('#replicate').submit();" type="submit"><span class="glyphicon glyphicon-plus"></span> Clone</a></li>
+                  </ul>
+                </div>
+              </form>
+            </td>
+          </tr>
+        {end events}
+      </tbody>
+    </table>
+  </div>
+
+  
+
+
+  <form method="post" id="" name="" class="" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+    <div class="modal fade" id="add-event">
+      <div class="modal-dialog">
+        <div class="modal-content">
+      
+          <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Add New Event</h3>
+          </div>
+          <div class="modal-body">
+
+            {/ TITLE }
+            <div class="title form-group">
+              <label for="title" class="control-label">Title</label>
+              <input type="text" name="name" id="title" class="form-control input-lg" value="{name}">
+            </div>
+
+
+            {/ EVENT START DATE}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="event_start_date" class="control-label">Start Day</label>
+                  <input type="text" name="event_start_date" class="datepicker form-control" id="event_start_date" value="{start_date.sec | time represent as "m/d/Y" | else #date}" {depot.status | is like :publish | then :readonly}>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-6">
+                  <label for="event_start_time" class="control-label">Start Time</label>
+                  <input type="text" name="event_start_time" class=" form-control" value="{start_date.sec | time represent as "g:ia" | else "6:30 p.m."}" id="event_start_time" {depot.status | is like :publish | then :readonly}>
+                </div>
+              </div>
+            </div>
+
+
+            {/ EVENT END DATE}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="event_end_date" class="control-label">End Day</label>
+                  <input type="text" name="event_end_date" class="datepicker form-control" id="event_end_date" value="{end_date.sec | time represent as "m/d/Y" | else #date}" {depot.status | is like :publish | then :readonly}>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="event_end_time" class="control-label">End Time</label>
+                  <input type="text" name="event_end_time" class="form-control" value="{end_date.sec | time represent as "g:ia" | else "9:30 p.m."}" id="event_end_time" {depot.status | is like :publish | then :readonly}>
+                </div>
+              </div>
+            </div>
+            <textarea name="commands" style="display:none">
+              {begin verbatim | process escape}
+                {(#event_start_date #event_start_time) | string join | > :event_start_date}
+                {(#event_end_date #event_end_time) | string join | > :event_end_date}
+                {event add | event set_name value #name | event set_start_date value @event_start_date | event set_end_date value @event_end_date | > :event_id}
+                {exec set_event_depot event_id @event_id value @MY.id path :organizer}
+    
+                {begin added | if @event_id}
+                  {notice set value {* ( :message "<strong>Success!</strong> Your event has been saved as a draft!" :type :success)}}      
+                  {page redirect to {"{@SITE.path}/yari/events/{@event_id}"}}
+                {end added}
+
+    
+              {end verbatim}
+            </textarea>
+
+            {/ <p>Status <strong>{depot.status}</strong>.</p> }
+
+      
+        
+    
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+    
+        
+        </div>
+      </div>
+    </div>
+  </form>

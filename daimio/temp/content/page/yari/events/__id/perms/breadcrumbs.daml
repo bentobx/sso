@@ -1,0 +1,16 @@
+{{* (
+  :pages {* (
+    :events {* (
+      :url
+      :yari/events
+      :title "Events"
+    )}
+    :event_id {* (
+      :url
+      :yari/events/{#id}
+      :title "{@event.name}")}
+    )}
+    :current "Permissions")}
+    | (__)
+    | merge string %template/components/breadcrumbs
+  }

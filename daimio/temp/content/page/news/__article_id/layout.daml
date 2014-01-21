@@ -1,0 +1,26 @@
+{begin noarticle}
+  <div class="container">
+
+      <h2>404</h2>
+      <p class="lead">We are sorry, but there's no article at this address. Back to <a href="{@SITE.path}/news">News</a>.</p>
+
+  </div>
+{end noarticle}
+{begin event | merge with @article | if @article | else $noarticle}    
+  <div class="jumbotron" style="background-image: url('{files.jumbotron}')">
+    <div class="container">
+      <div id="jumbo-header">
+        <h2><span>{name}</span></h2>         
+        <h3>{depot.summary | string textile}</h3>
+        {/<p class="lead byline"><span><em>by</em> {@author.my.firstname} {@author.my.lastname}</span></p>}
+        <p class="published"><span>{pubdate.sec | time represent as "F j, Y"}</span></p>
+      </div>
+    </div>
+  </div>                    
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">{%sidebar}</div>
+      <div class="col-md-9">{%content}</div>
+    </div>
+  </div>
+{end event}

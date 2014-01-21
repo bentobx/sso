@@ -1,31 +1,29 @@
-<link href="css/pizza.css" media="screen, projector, print" rel="stylesheet" type="text/css" />
-
 {* (
-  :schools      :529cea2caa77c4b20a00000c
-  :media        :529cea53aa77c4ba0a00000c
-  :communities  :529cea80aa77c4b10a000007 )
+  :schools      {* (:name :schools :id :529cea2caa77c4b20a00000c :text "of Ontario youth say <strong>their schools</strong>  are working to support their mental health")}
+  :media        {* (:name :media :id :529cea53aa77c4ba0a00000c :text "of Ontario youth say <strong>the media</strong> is working to support their mental health")}
+  :communities  {* (:name :communities :id :529cea80aa77c4b10a000007 :text "of Ontario youth say <strong>their communities</strong> are working to support their mental health")})
 | > :questions | ""}
 
-{study yesno id @SSO.study_id | > :totals | ""}
 
 <div class="row">
-  {begin charts | foreach with @questions}
-    { @totals.{value} | > :my_totals
+  {begin charts | merge with @questions}
+    
+    { @totals.{id} | > :my_totals
     | @my_totals.yes | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :yes
     | @my_totals.no  | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :no 
     | ""}
-    
     <div class="col-md-4">  
-      <h2>{key}</h2>
+      <h2>{name}</h2>
       
-      <ul data-pie-id="my-{key}-chart">
-        <li style="color:pink" data-value="{@yes}">Yes {@yes}%</li>
-        <li style="color:lightgreen" data-value="{@no}">No {@no}%</li>
+      <ul data-pie-id="my-{name}-chart" class="hide">
+        <li style="" data-value="{@yes}">Yes {@yes}%</li>
+        <li style="" data-value="{@no}">No {@no}%</li>
       </ul>
-      <div id="my-{key}-chart"></div>
+      <div id="my-{name}-chart"></div>
     
+    <p class="lead"><strong>{@yes}%</strong> {text}</p>
     </div>
   {end charts}
 </div>

@@ -1,0 +1,8 @@
+{begin nullblock | process consume | @return}  
+  {begin no_ttype}
+    {permit superdo command "{ticket find by_events event_id | collection count | > :return}"}    
+  {end no_ttype}
+  {begin ttype_param | if ttype_id else $no_ttype}
+    {permit superdo command "{ticket find by_events event_id by_types ttype_id | collection count | > :return}"}    
+  {end ttype_param}
+{end nullblock}

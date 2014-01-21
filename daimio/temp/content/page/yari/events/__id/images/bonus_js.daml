@@ -1,0 +1,18 @@
+{%page/yari/events/__id/bonus_js}
+{begin js | process escape}
+  <script>
+  $(document).ready(function(){
+
+    var $container = $('#event-images');
+
+    $container.imagesLoaded( function(){
+      $container.isotope({
+        masonryHorizontal: {
+          rowHeight: 160
+        }
+
+      });
+    }); 
+  });
+  </script>
+{end js}

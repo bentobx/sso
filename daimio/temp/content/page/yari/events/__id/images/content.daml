@@ -1,0 +1,60 @@
+{begin layout | merge with (@event)}
+  <div class="page-header">
+    <h3>Image for This Event</h3>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      {begin placeholder}
+        <img src="holder.js/500x250/text:Please select or upload an image" class="img-responsive">
+      {end placeholder}
+      {begin image | if depot.header_image else $placeholder}
+        <img src="{depot.header_image}" alt="" class="img-responsive">
+      {end image}
+    </div>
+    <div class="col-md-4">
+      <form method="post" id="" name="" class="" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+        <h4>Upload a New Image</h4>
+        <div class="form-group">
+          <input type="file" class="form-input" name="event_header_image" id="">
+        </div>
+        <input type="hidden" name="event_id" value="{#id}">
+        <textarea name="commands" style="display:none">
+          {begin verbatim | escape}
+            {stuff add type :event_header_image | > :image_id}
+            {exec upload_file thing (:stuff @image_id) path :image file :event_header_image}
+            {exec admin_depot_set for @image_id in :stuff path :event_id value #event_id}
+            {begin success | if @image_id}
+              {stuff find by_ids @image_id | __.files.#1.image | > :image_path}
+              {exec set_event_depot event_id #event_id value @image_path path :header_image}              
+              {log (@image_path)}
+            {end success}
+          {end verbatim}
+        </textarea>
+        <button type="submit" class="btn btn-success">Upload</button>
+      </form>
+    </div>
+  </div>
+  <hr>
+  <h4>Attach an Existing Image</h4>
+  <div class="row" id="event-images">
+    {begin image_grid | merge with @events_stuff_images}
+      <div class="col-sm-6 col-md-3">              
+        <a href="#" onclick="$(this).children('form').submit();" class="thumbnail">
+          <img src="{files.image}" alt="" >
+          
+          <form method="post" id="" name="" class="hide" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+            <input type="hidden" name="event_id" value="{#id}">          
+            <input type="hidden" class="form-control" name="header_image_from_stuff" id="" value="{files.image}">
+            <textarea name="commands" style="display:none">
+              {begin verbatim | escape}
+                {exec set_event_depot event_id #event_id value #header_image_from_stuff path :header_image}                  
+              {end verbatim}
+            </textarea>
+          </form>
+        </a>
+      </div>
+    {end image_grid}
+  
+  </div>
+</div>
+{end layout}

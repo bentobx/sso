@@ -1,0 +1,29 @@
+{/ data tables }
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="{@SITE.path}/js/bootstrap.min.js"></script>
+{/<script src="{@SITE.path}/js/jquery.dataTables.js"></script>}
+{/<script src="{@SITE.path}/js/DT_bootstrap.js"></script>}
+<script src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.min.js"></script>
+<script src="{@SITE.path}/js/holder.js"></script>
+<script src="{@SITE.path}/js/bootstrap-datepicker.js"></script>
+{begin block | process escape}
+
+
+  <script>
+  $(document).ready(function(){
+    $('#login-modal').modal(
+      {backdrop: 'static',
+      show: true,
+      keyboard: false
+    });
+    $('.datepicker').datepicker({
+      weekStart: '1',
+      autoclose: true
+    });
+    $('.chosen').chosen();
+  });
+
+
+  </script>
+{end block}
+

@@ -1,0 +1,4 @@
+{/lens get_my_posts | collection sort by {* (:event_start_date :desc)} | > :articles}
+
+{article find options {* (:sort {* (:pubdate "-1")})} | > :articles}
+{/%page/yari/__data | process consume}

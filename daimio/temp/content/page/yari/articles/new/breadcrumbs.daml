@@ -1,0 +1,1 @@
+{{* (:pages {* (:articles {* (:url :yari/articles :title "Articles")})} :current "New Article")} | (__) | merge string %template/components/breadcrumbs}

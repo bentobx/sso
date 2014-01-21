@@ -1,0 +1,9 @@
+{#firstname} {#lastname} has requested a complimentary membership for volunteering, mentoring, or speaking.
+
+Username: {#username}
+Reason: {#reason}
+Plan: {#member_type}
+
+Review and approve their membership now: {@SITE.path}/admin/new-members
+
+- DMG bot

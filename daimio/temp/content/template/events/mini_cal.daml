@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-md-4">
+    <p class="date">
+      {begin multiday}
+
+        {start_date | time represent as "l, M j"}
+        {begin end_date | if {:0000 | is in end_date | not}}
+          - {end_date | time represent as "l, M j"}
+        {end end_date}  
+      {end multiday}
+
+      {begin oneday | if {{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} | else $multiday}
+      {start_date | time represent as "M d, Y" | > :start | ""}
+      {time represent as "M d, Y" | > :today | ""}
+      {begin today}
+        Today
+      {end today}
+
+      {@start | is like @today | then $today | else "{start_date | time represent as "l, M j"}"}
+    {end oneday}
+    </p>
+  </div>
+
+  <div class="col-md-8">
+    {begin future | if {_id | is in @future._id}}
+      {/<a href="{@SITE.path}/events/{_id}" class="btn btn-primary pull-right">Register</a>    }
+    {end future}
+    <h4><a href="{@SITE.path}/events/{key | else _id}" class="title">{name}</a></h4>
+    {depot.summary | string textile}
+  </div>
+</div>
+
+<hr>

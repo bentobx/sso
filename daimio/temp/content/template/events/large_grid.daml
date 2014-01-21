@@ -1,0 +1,66 @@
+<div class="event item col-md-4 {depot.category} {tags | foreach string "{value | string lowercase | string transform old " " new "-"}" glue " "}" data-category="{tags.#1}">
+
+  <div class="row slug">
+    <div class="col-md-10">
+      <h5><a class="title" title="{title}" href="{@SITE.path}/events/{key}">{name}</a></h5>
+    </div>
+
+
+    <div class="col-md-2">
+      <div class="listing-category pull-right">
+        <div class="category-bg"></div>
+        <div class="category {depot.category}"></div>
+      </div>            
+    </div>
+  </div>
+  
+  
+  <div class="row image">
+    <div class="col-md-12">
+      <a class="title" title="{title}" href="{@SITE.path}/events/{key}">
+        <img src="{depot.header_image}" class="">
+      </a>
+    </div>
+  </div>
+  
+  
+  {ifelse ({{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} "{"oneday" | > :type | ""}" :default "{"multiday" | > :type | ""}") | ""}
+  
+
+  <div class="row listing-details">
+
+    <div class="col-md-12"> 
+      <p class="listing-date">  
+        {begin multiday}
+          <span class="weekday">
+            {start_date | time represent as "D M j"}
+            {begin end_date | if {:0000 | is in end_date | not}}
+              - {end_date | time represent as "D M j"}
+            {end end_date}  
+          </span> 
+        {end multiday}
+        {begin oneday | if {{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} | else $multiday}
+        {start_date | time represent as "M d, Y" | > :start | ""}
+        {time represent as "M d, Y" | > :today | ""}
+        {start_date | time represent as "D" | > :weekday | ""}
+        {start_date | time represent as "M" | > :month | ""}
+        {start_date | time represent as "j" | > :day | ""}
+        {begin today}
+          <span class="label label-today">Today</span>          
+        {end today}
+        {begin dateformatted}
+            
+          <span class="weekday">{@weekday}</span>
+          <span class="month">{@month}</span>
+          <span class="day">{@day}</span>
+            
+            
+        {end dateformatted}
+        {@start | is like @today | then $today | else $dateformatted}
+        <span class="time">{start_date | time represent as "Hi" | is like :0000 | then "All day" else "@ {start_date | time represent as "g:i a"}"}</span>
+      {end oneday}
+    </p>    
+  </div>
+</div>
+
+</div>

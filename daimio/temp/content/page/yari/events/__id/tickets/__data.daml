@@ -1,0 +1,2 @@
+{%page/yari/events/__id/__data}
+{ticket find_types by_ids @event.ttypes._id | > :ticket_types | ""}

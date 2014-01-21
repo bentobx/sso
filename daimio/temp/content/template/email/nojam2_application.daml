@@ -1,0 +1,17 @@
+A new No Jam 2 application has been submitted:
+
+--
+{#email}
+
+{begin ham | foreach with #my.nojam2_application}
+## {key}
+{value}
+{end ham}     
+
+Optional diversity disclosure:
+{#diversity}
+
+
+--
+
+- DMGbot

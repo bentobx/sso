@@ -1,27 +1,61 @@
 {%global/header}
-<body id="" data-spy="scroll">   
+<body id="{@metadata.page.body-id}" class="{@metadata.page.body-classes}" data-spy="scroll">
   
   {%nav}
 
 
   {%layout} 
-  
-  <div class="container">
-    <footer>
-      <p>&copy; {@metadata.company.name} {time represent as :Y}</p>
-    </footer>
-  </div> <!-- /container -->
+  <div id="footer">
+    <div class="container">
+      <footer>
+        <div class="row">
+          <div class="col-md-4">
+            <p>&copy; {@metadata.company.name} {time represent as :Y}</p>
+            <div class="socialbar_transparent borderless">
+              <ul class="ss sscircle">
+                <li class="twitter"><a href="https://twitter.com/peace_of_minds">@peace_of_minds</a></li>
+                <li class="facebook"><a href="https://www.facebook.com/SchizophreniaSocietyON">/SchizophreniaSocietyON</a></li>
+              </ul>  
+            </div>
+            
+          </div>
+          <div class="col-md-4">
+            <p><span class="caps">SOUND OFF</span> is guided by a <a href="#">Youth Advisory Council</a> with support from the <a href="http://www.schizophrenia.on.ca/">Schizophrenia Society of Ontario</a>.</p>
+        
+            
+            </div>
+          <div class="col-md-4">
+            
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="list-unstyled pull-right" id="extras">
+                  <li><a href="http://www.schizophrenia.on.ca/Contact">Contact the SSO</a></li>
+                  <li><a href="http://www.schizophrenia.on.ca/Privacy-Policy">Privacy Policy</a></li>
+                </ul>           
+              </div>
+              <div class="col-md-6">
+                <p class="pull-right">
+                  <img src="{@SITE.path}/images/sso_logo_white.png" class="img-responsive">
+                </p>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div> <!-- /container -->
+  </div>
   
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script type="text/javascript" src="{@SITE.path}/js/bootstrap.min.js"></script>
-
+  {%global/js}
   <!-- // TypeKit -->
 
-  {/<script type="text/javascript" src="//use.typekit.net/bnd3ehn.js"></script>
-  {begin js | process escape}<script type="text/javascript">try{Typekit.load();}catch(e){}</script>{end js}}
+  <script type="text/javascript" src="//use.typekit.net/yuq4vhj.js"></script>
+  {begin js | process escape}<script type="text/javascript">try{Typekit.load();}catch(e){}</script>{end js}
   <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  {%bonus_js}
+    {%bonus_js}
   </body>
   </html>

@@ -1,0 +1,7 @@
+{#item_name} purchased by {#firstname} {#lastname} ({#email})
+
+{begin paid | if #amount}Paid: ${#amount | string transform old "/(\d\d)$/" new ".$1"}{end paid}
+
+{begin ham | foreach with #my}
+{key}: {value}
+{end ham}

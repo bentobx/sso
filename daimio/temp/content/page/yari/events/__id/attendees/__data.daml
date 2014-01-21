@@ -1,0 +1,12 @@
+{%page/yari/events/__id/__data}
+
+{lens ticket_find_by_event event #id
+  | > :total_tickets
+  | __.user
+  | profile find
+  | collection sort by :my.firstname
+  | > :profiles}
+
+{@total_tickets
+  | collection rekey by_key :user
+  | > :tickets}

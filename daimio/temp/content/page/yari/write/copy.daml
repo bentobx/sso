@@ -1,0 +1,148 @@
+<form method="post" ENCTYPE="multipart/form-data" accept-charset="utf-8">
+  <div class="row">
+    {begin layout}
+	
+			
+			
+      <div class="{@articles.{#id}.status} col-md-8">
+        <h2>{if #id then "Editing Article" else "New Article"}</h2>
+
+        {/ TITLE }
+        <div class="title form-group">
+          <label for="title" class="control-label">Title</label>
+          <input type="text" name="title" id="title" class="col-md-8" value="{fields.title.value}">
+        </div>
+
+        {/ ASIDE }
+        <div class="summary form-group">
+          <label for="aside" class="control-label">Intro/Aside <small class="pull-right">This appears in the header on blog detail pages.</small></label>
+          <textarea class="col-md-8" id="textarea" rows="4" name="aside">{fields.aside.value}</textarea>
+
+        </div>
+
+        {/ BODY }
+        <div class="body form-group">
+          <label for="body" class="control-label">Body</label>
+          <textarea class="col-md-8" id="textarea" rows="15" name="body">{fields.body.value}</textarea>
+        </div>
+
+
+        {/ SUMMARY }
+        <div class="summary form-group">
+          <label for="summary" class="control-label">Summary <small class="pull-right">This appears below the title on blog archives/list pages.</small></label>
+          <textarea class="col-md-8" id="textarea" rows="8" name="summary">{fields.summary.value}</textarea>
+
+
+        </div>
+
+
+
+
+      </div>
+
+      <div class="col-md-4">
+	
+				{begin draft_notice}
+				  <div class="alert alert-warning">
+						This article is a draft.
+            <a class="btn btn-default" href="{@SITE.path}/yari/write/{@articles.{#id}.id}/preview"><i class="glyphicon glyphicon-eye-open" target="_blank"></i> Preview</a>
+				  </div>
+				{end draft_notice}
+
+					{begin live_notice}
+				  <div class="alert alert-success">
+						This article is live.
+
+            <a class="btn btn-default" href="{@SITE.path}/news/{@articles.{#id}.id}/{@articles.{#id}.title | string url_encode}" target="_blank"><i class="glyphicon glyphicon-eye-open"></i> View</a>
+
+				  </div>
+				{end live_notice}
+
+						{ifelse (
+						  {fields.status.value | is like :draft} $draft_notice
+						  {fields.status.value | is like :live} $live_notice
+						  :default $not_saved
+						)}
+						
+						
+						
+        <div class="well">
+          {// STATUS //}
+          <div class="status  form-group">
+            <label for="status" class="control-label">Status</label>
+            <p class="help-block"></p>
+            <select name="status" id="status">
+
+              <option value="draft" {:selected | if {fields.status.value | is like :draft}}>draft</option>
+
+              <option value="live" {:selected | if {fields.status.value | is like :live}}>live</option>
+
+              {// <option value="hidden">hidden</option> //}
+
+            </select>
+          </div>
+
+
+          {/ PUB DATE}
+          <div class="form-group">
+            <label for="publish_date" class="control-label">Publish Date</label>
+            <p class="help-block"></p>
+            <input type="text" name="publish_date" class="" id="publish_date" value="{ifelse ({fields.publish_date.value} "{fields.publish_date.value | time represent as "m/d/Y"}" :default "{time represent as "m/d/Y"}")}">
+          </div>
+
+
+          {/ TAGS }
+          <div class="tags  form-group">
+            <label for="tags" class="control-label">Tags</label>
+            <p class="help-block"></p>
+            <textarea name="tags" id="tags" class="tags">{fields.tags.value}</textarea><p class="description"></p>
+          </div>
+
+
+
+          {/ COMMENTS}
+          {/ <div class="form-group">
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" name="allow_comments" id="allow_comments" value="1">
+                Allow commenting on this article
+              </label>
+            </div>
+          </div> }
+
+       
+
+        </div>
+        <div class="form-actions"><button class="btn btn-lg btn-primary">Save</button>
+        </div>
+
+
+        {begin existing | if #id}
+          {// {%page/yari/machinetagger} //}
+          <div class="form-group">
+            <label class="control-label" for="permalink">Short link</label>
+            <div class="controls">
+              <input value="{@SITE.path}/news/{@articles.{#id}.id}" id="" class="input-xlarge select col-md-4" readonly="readonly" type="text" onfocus="this.select();" onclick="this.select();">
+            </div>
+
+          {end existing}
+        </div><!--/.well -->
+      </div><!--/span-->
+      <input type="hidden" name="row_id" value="{#id}">
+      <textarea name="commands" style="display:none">
+        {begin verbatim | sub with id as :row | process escape}
+          {data input form :articles row #row_id values @POST | > :post_id}
+          {begin success | if @post_id}
+            {notice set value {* ( :message "<strong>Success!</strong> Your blog post has been saved!" :type :success)}}
+            {page redirect to {"/yari/write/{@post_id}"}}            
+          {end success}
+        {end verbatim}
+      </textarea>
+    </div>
+  </div>
+</form>
+
+
+{end layout}
+{form display keyword :articles row #id layout $layout}
+</div>

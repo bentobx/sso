@@ -1,4 +1,4 @@
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -7,18 +7,17 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">SSO: Sound OFF!</a>
+      <a class="navbar-brand hide" href="#">SSO: Sound OFF!</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li class="active"><a href="#">Stories</a></li>
-        <li class="active"><a href="#">Events</a></li>
-        <li class="active"><a href="#">Youth Task Force</a></li>
-        <li class="active"><a href="#">Sound Off! Days</a></li>
-        <li class="active"><a href="#">Partners</a></li>
+        <li {and ({#getinvolved | not} {@PAGE.path | is like :__home}) | then "class='active'"}><a href="{@SITE.path}/">Home</a></li>
+        <li {@PAGE.path | is like :about | then "class='active'"}><a href="{@SITE.path}/about">About</a></li>
+        <li {and ({#getinvolved | is like :ham | not} {@PAGE.path | is like :__home}) | then "class='active'"}><a href="{@SITE.path}#getinvolved">Get Involved</a></li>
+        <li {:news | is in @PAGE.path | then "class='active'"}><a href="{@SITE.path}/news">News</a></li>
+        <li><a href="http://bit.ly/L9V5cz">Donate</a></li>
       </ul>
-      <p class="navbar-text">Got a mental health question? <a href="#">Don't wait and ask an expert!</a></p>
+      <p class="navbar-text pull-right">Got a mental health question? <a href="http://www.schizophrenia.on.ca/Programs-Services/Ask-the-Expert">Don't wait and ask an expert!</a></p>
     </div><!--/.navbar-collapse -->
   </div>
 </div>

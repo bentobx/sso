@@ -1,0 +1,269 @@
+{/%global/notices}
+
+<form method="post" ENCTYPE="multipart/form-data" accept-charset="utf-8">
+  <input type="hidden" value="{#id}" name="article_id">
+  <input type="hidden" value="{@article.square}" name="status">
+  
+  
+  <textarea name="commands" style="display:none">
+    {begin verbatim | process escape}
+
+      {#article_id | > :article_id}  
+
+
+      
+      {begin save}
+        {@article_id | article set_name value #title | article set_pubdate value #publish_date | article set_key value #urlkey}
+        {tag set for @article_id in :articles value {#tags | string split on ", "}}
+
+        {begin set_depot | foreach with #article_depot}
+          {exec set_article_depot article_id @article_id value value path key}
+        {end set_depot}
+        {exec upload_file thing (:articles @article_id) path :jumbotron file :jumbotron}
+        {exec upload_file thing (:articles @article_id) path :image1 file :image1}
+        {exec upload_file thing (:articles @article_id) path :image2 file :image2}
+        {exec upload_file thing (:articles @article_id) path :image3 file :image3}
+      
+        {notice set value {* ( :message "<strong>Success!</strong> Your blog post has been saved!" :type :success)}}					              
+      {end save}
+      
+      
+      {begin submit_draft}
+        {@article_id | article submit_draft | > :submitted}
+        {begin submitted | if @submitted}
+          {notice set value {* ( :message "<strong>Success!</strong> Your blog post has been submitted!" :type :success)}}       
+        {end submitted}
+      {end submit_draft}
+
+      {begin publish}
+
+        {begin draft | if {#status | is like :draft}}
+          {@article_id | article submit_draft | > :submitted}          
+
+        {end draft}
+
+        {#status | is like :pending | > :submitted}
+
+        {begin submitted | if @submitted}
+          {@article_id | article publish | > :published}          
+        {end submitted}
+        {begin success | if @published}
+          {notice set value {* ( :message "<strong>Success!</strong> Your blog post has been published!" :type :success)}}       
+        {end success}
+      {end publish}
+
+
+
+          
+      {begin unpublish}
+        {@article_id | article unpublish | > :unpublished}
+        {$save}
+        {begin success | if @unpublished}
+          {notice set value {* (:message "<strong>Success!</strong> Your blog post has been unpublished!" :type :success)}}
+        {end success}
+      {end unpublish}
+
+
+      {begin editing}
+        {#article_id | > :article_id}  
+      {end editing}
+        
+      {begin new | if {#article_id | not} else $editing}
+        {article add | > :article_id}
+        {$save}
+        {page redirect to {"{@SITE.path}/yari/articles/{@article_id}"}}
+      {end new}
+                    
+          
+
+          
+          
+
+      {ifelse (
+        {#save} $save
+        {#submit_draft} $submit_draft
+        {#publish} $publish
+        {#unpublish} $unpublish
+      )}
+        
+
+    {end verbatim}
+  </textarea>
+      
+
+
+
+  <div class="container">
+    
+    <div class="row">
+      <div class="col-md-12">
+
+        {begin submit_draft_button}
+          <button type='submit' class='btn btn-default' name='submit_draft' value='submit_draft'>Submit Draft</button>  
+        {end submit_draft_button}
+          
+        {begin save_button}
+          <button type='submit' class='btn btn-default' name='save' value='save'>Save Changes</button>  
+        {end save_button}
+      
+        {begin publish_button}
+          <button type='submit' class='btn btn-primary' name='publish' value='publish'>Publish</button>
+        {end publish_button}
+      
+        {begin unpublish_button}
+          <button type='submit' class='btn btn-warning' name='unpublish' value='unpublish'>Unpublish</button>        
+        {end unpublish_button}
+
+        {begin save_button}
+          <button type='submit' class='btn btn-success' name='save' value='save'>Save</button>        
+        {end save_button}
+
+
+        {ifelse (
+          {@article.square | is like :draft} "{$save_button} {$submit_draft_button} {$publish_button}"
+          {@article.square | is like :pending} "{$save_button} {$publish_button}"
+          {@article.square | is like :published} "{$save_button} {$unpublish_button}"
+          :new "{$save_button}{$submit_draft_button}"
+  
+        )}
+
+
+      
+        
+        
+      </div>
+    </div>
+    
+    
+    <hr>
+    <div class="row">
+      <div class="{@article.square} col-md-8">
+        <div class="page-header">
+          <h2>{if #id then "Editing Article" else "New Article"} <small>{@article.square}</small></h2>
+        </div>
+        {/ TITLE }
+        <div class="title form-group">
+          <label for="title" class="control-label">Title</label>
+          <input type="text" name="title" id="title" class="form-control input-lg" value="{@article.name}">
+        </div>
+        <div class="form-group">
+          {/ BODY }
+          <div class="body form-group">
+            <label for="body" class="control-label">Body</label>
+            <textarea class="form-control" id="textarea" rows="15" name="article_depot[body]">{@article.depot.body}</textarea>
+          </div>
+          
+          {/ SUMMARY }
+          <div class="summary form-group">
+            <label for="summary" class="control-label">Summary</label>
+            <textarea class="form-control" id="textarea" rows="8" name="article_depot[summary]">{@article.depot.summary}</textarea>
+          </div>
+				
+        </div>
+        
+        
+        <div class="row">
+          <div class="col-md-6">
+          
+
+            <div class="form-group">
+              <div class="controls">
+                <label for="avatar" class="control-label">Jumbotron Image</label>
+                <input type="file" class="file" name="jumbotron">
+                {ifelse (
+                  {@article.files.jumbotron} "<img src='{@article.files.jumbotron}' alt='Name!' style='width: 300px; height: 100px;'> "
+                  :default "<img data-src='holder.js/300x100/text:{depot.developer}' alt='Name!' style='width: 300px; height: 100px;'> "
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+          
+            <div class="form-group">
+              <div class="controls">
+                <label for="avatar" class="control-label">Article Image 1</label>
+                <input type="file" class="file" name="image1">
+                {ifelse (
+                  {@article.files.image1} "<img src='{@article.files.image1}' alt='Name!' style='width: 300px; height: 100px;'> "
+                  :default "<img data-src='holder.js/300x100/text:{depot.developer}' alt='Name!' style='width: 300px; height: 100px;'> "
+                )}
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="row">
+         
+          <div class="col-md-6">
+            <div class="form-group">
+              <div class="controls">
+                <label for="avatar" class="control-label">Article Image 2</label>
+                <input type="file" class="file" name="image2">
+                {ifelse (
+                  {@article.files.image2} "<img src='{@article.files.image2}' alt='Name!' style='width: 300px; height: 100px;'> "
+                  :default "<img data-src='holder.js/300x100/text:{depot.developer}' alt='Name!' style='width: 300px; height: 100px;'> "
+                )}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <div class="controls">
+                <label for="avatar" class="control-label">Article Image 3</label>
+                <input type="file" class="file" name="image3" id="">
+                {ifelse (
+                  {@article.files.image3} "<img src='{@articles.files.image3}' alt='Name!' style='width: 300px; height: 100px;'> "
+                  :default "<img data-src='holder.js/300x100/text:{depot.developer}' alt='Name!' style='width: 300px; height: 100px;'> "
+                )}
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+      </div>
+
+
+      <div class="col-md-4">
+        {/ PUB DATE}
+        <div class="form-group">
+          <label for="publish_date" class="control-label">Publish Date</label>
+          <input type="text" name="publish_date" class="datepicker form-control" id="publish_date" value="{ifelse ({@article.pubdate.sec} "{@article.pubdate.sec | time represent as "m/d/Y"}" :default "{time represent as "m/d/Y"}")}">
+        </div>
+
+          
+
+          {/ Tags }
+          <div class="title form-group">
+            <label for="title" class="control-label">Tags</label>
+            <textarea name="tags" id="tags" class="form-control" rows="2" value="">{@article.tags | string join}</textarea>
+          </div>          
+
+        {/ KEY}
+        <div class="url-key form-group {@ERRORS.article.set_key | then :has-error}">
+          <label for="url-key" class="control-label">URL keyword</label>
+          <input type="text" name="urlkey" id="title" class="form-control" value="{ifelse ({@POST.urlkey} "{@POST.urlkey}" {@article.key} "{@article.key}" :default "{name | string url_encode | string lowercase}")}">
+          <p class="help-block"><small>{@article.key | then "Currently set to <strong>{@article.key}</strong>"}</small></p>
+          {begin help | if @ERRORS.article.set_key}
+            <p class="help-block"><strong>{@ERRORS.article.set_key.#1}.</strong> URL key must be unique and contain only alpha-numeric characters, dashes, and underscores.</p>                
+          {end help}
+        </div>
+
+        {begin existing | if #id}
+            <label for="title" class="control-label">Permalink</label>
+          <div class="input-group">
+
+            
+            <input value="{@SITE.path}/news/{@article.key}" id="" class="form-control" readonly="readonly" type="text" onfocus="this.select();" onclick="this.select();">
+            <span class="input-group-btn">
+              <a class="btn btn-default" href="{@SITE.path}/news/{@article.key}"><span class="glyphicon glyphicon-eye-open"></span></a>
+            </span>
+          </div>
+        {end existing}
+      </div><!--/.well -->
+    </div><!--/span-->
+  </div>
+
+    
+</form>

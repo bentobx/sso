@@ -1,0 +1,1 @@
+{permit superdo command "{coupon find by_key key}"}

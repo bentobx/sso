@@ -1,0 +1,4 @@
+{/ifelse (
+  {event find by_ids event options {* (:i_can :edit)} | not} "You do not have root permission for this event."
+  :default ""
+)}

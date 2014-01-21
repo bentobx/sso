@@ -1,0 +1,15 @@
+A new No Jam application has been submitted:
+
+--
+{#email}
+
+{begin ham | foreach with #my.nojamapplication}
+{key}
+{value}
+
+{end ham}     
+
+
+--
+
+- DMGbot

@@ -1,0 +1,242 @@
+
+{begin layout | merge with (@event)}
+  <form method="post" id="event-form" name="" class="{if {permit i_can has (:events #id) to :edit} else :disabled} form-vertical" novalidate accept-charset="UTF-8" enctype="multipart/form-data" role="form"> 
+
+    {/ TITLE }
+          
+                  
+          
+    <div class="row">
+      <div class="title form-group col-md-12">
+        <label for="title" class="control-label">Title</label>
+        <input type="text" name="name" id="title" class="form-control input-lg" value="{name}">
+      </div>
+
+    </div>
+
+
+
+
+    {/ EVENT DATE}
+    <div class="row">
+      <div class="form-group col-md-3">
+        <label for="event_start_date" class="control-label">Start Day</label>
+        <input type="text" name="event_start_date" class="form-control datepicker" id="event_start_date" value="{start_date.sec | time represent as "m/d/Y" | else #date}" >
+      </div>
+      <div class="form-group col-md-3">
+        <label for="event_start_time" class="control-label">Start Time</label>
+        <input type="text" name="event_start_time" class="form-control" value="{start_date.sec | time represent as "g:ia" | else "6:30 p.m."}" id="event_start_time" >
+      </div>
+      {/ EVENT END DATE}
+      <div class="form-group col-md-3">
+        <label for="event_end_date" class="control-label">End Day</label>
+        <input type="text" name="event_end_date" class="form-control datepicker" id="event_end_date" value="{end_date.sec | time represent as "m/d/Y" | else #date}" >
+      </div>
+      <div class="form-group col-md-3">
+        <label for="event_end_time" class="control-label">End Time</label>
+        <input type="text" name="event_end_time" class="form-control" value="{end_date.sec | time represent as "g:ia" | else "9:30 p.m."}" id="event_end_time" >
+      </div>
+    </div>
+    <hr>
+  
+    <hr>
+    {/ Description }
+    <div class="title form-group">
+      <label for="title" class="control-label">Description</label>
+      <textarea name="description" id="description" class="form-control" rows="8" value="">{depot.description}</textarea>
+{/      <p class="help-block">You can use <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> here</p>}
+    </div>
+    <section>
+      <div class="page-header">
+        <h2>Promotion</h2>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-6">
+          {/ Summary }
+          <div class="title form-group">
+            <label for="title" class="control-label">Summary</label>
+            <textarea name="summary" id="summary" class="form-control" rows="2" value="">{depot.summary}</textarea>
+            <p class="help-block">This appears in the weekly events email.<br>Keep it short (1-3 sentences).</p>
+          </div>
+          
+        </div>
+        <div class="col-md-6">
+          {/ Tags }
+          <div class="title form-group">
+            <label for="title" class="control-label">Tags</label>
+            <textarea name="tags" id="tags" class="form-control" rows="2" value="">{tags | string join}</textarea>
+
+          </div>
+          
+          
+        </div>
+      </div>
+      <hr>
+
+      <div class="url-key form-group {@ERRORS.event.set_key | then "has-error"}">
+        <label for="url-key" class="control-label">URL keyword</label>
+        <p class="help-block">{key | then "Currently set to <span class='text-info'>{key}</span>"}</p>
+        
+        <div class="input-group">
+          <span class="input-group-addon">{@SITE.path}/events/</span>
+          <input type="text" name="urlkey" id="title" class="form-control" value="{ifelse ({@POST.urlkey} "{@POST.urlkey}" {key} "{key}" :default "{name | string url_encode | string lowercase}")}">
+
+        </div>
+        {begin help | if @ERRORS.event.set_key}
+          <p class="help-block"><strong>{@ERRORS.event.set_key.#1}.</strong> URL key must be unique and contain only alpha-numeric characters, dashes, and underscores.</p>                
+        {end help}
+      </div>
+
+    </section>
+    
+{/ buttons }
+
+
+
+<div class="form-actions">
+  <hr>
+  <button type="submit" name="action" value="save" class="btn btn-lg btn-default">Save</button>
+  {begin draft | if {and ({:admin | is in @MY.keychain | not} {square | is like :draft})}}          
+    <button type="submit" name="action" value="submit_draft" class="btn btn-lg btn-success pull-right {@event.valid | not | then :disabled}" {@event.valid | not | then "disabled"}>Submit Event for Approval</button>
+  {end draft}
+        
+  {begin pending | if {and ({:admin | is in @MY.keychain} {square | is like :published | not})}}
+    <button type="submit" name="action" value="publish" class="btn btn-lg btn-success pull-right">Publish</button>
+  {end pending}
+  {begin published | if {and ({:admin | is in @MY.keychain} {square | is like :published})}}
+    <button type="submit" name="action" value="unpublish" class="btn btn-danger btn-lg pull-right">Unpublish</button>
+  {end published}
+</div>
+
+
+
+
+
+  </div>
+
+</div>
+
+
+
+
+</div>
+<input type="hidden" name="event_id" value="{#id}">
+<input type="hidden" name="submitter_first_name" value="{@profile.my.firstname}">
+<input type="hidden" name="submitter_last_name" value="{@profile.my.lastname}">
+<input type="hidden" name="valid" value="{@event.valid}">
+<input type="hidden" name="square" value="{@event.square}">
+<input type="hidden" name="stripe_account_id" value="{@organizer.depot.stripe_account_id}">
+<textarea name="commands" style="display:none">
+{begin verbatim | process escape}
+  {/ Smoosh dates }
+  {(#event_start_date #event_start_time) | string join | > :event_start_date}
+  {(#event_end_date #event_end_time) | string join | > :event_end_date}
+  {/ Set event stuff }
+  {#event_id |
+    event set_name value #name |
+    event set_start_date value @event_start_date |
+    event set_end_date value @event_end_date |
+    event set_location value "Bento Miso" |
+  event set_key value #urlkey}
+  {/ Set depot stuff }
+  {exec set_event_depot event_id #event_id value #description path :description}
+  {exec set_event_depot event_id #event_id value #summary path :summary}
+  {exec set_event_depot event_id #event_id value #registration path :registration.type}
+  {exec set_event_depot event_id #event_id value #registrationlink path :registration.link}                
+  {exec set_event_depot event_id #event_id value #members path :members}
+  
+  {begin stripeconnect | if #stripe_account_id}
+    {exec set_event_depot event_id #event_id value #stripe_account_id path :stripe_account_id} 
+  {end stripeconnect}
+        
+  {tag set for #event_id in :events value {#tags | string split on ", "}}
+
+
+
+
+      
+  {/ Publishing workflow }
+  {begin error}
+    {notice set value {* (
+      :message "<strong>Error!</strong> Sorry - that event is not valid."
+      :type :danger
+    )}}
+  {end error}
+  {begin submit_draft | if {#action | is like :submit_draft}}
+    {log (#action #valid :hello)}
+    {begin validate | if #valid else $error}
+      {begin success | if {event submit_draft id #event_id}}
+        {exec admin_send_email subject {"[Miso-admin] {#submitter_first_name} {#submitter_last_name} has requested approval for {#name} on {#event_start_date}"} body {%template/email/event_request | process consume}}           
+        {exec send_member_email subject {"[Miso] Request received for {#name} on {#event_start_date}"} body {%template/email/event_request_receipt | process consume}}
+
+        {notice set value {* ( :message "<strong>Success!</strong> Your event has been submitted for approval." :type :success)}}  
+      {end success}
+    {end validate}
+  {end submit_draft}
+
+
+
+  {begin publish | if {#action | is like :publish}}
+    {/ Status on click, set by name on button }
+    {begin validate | if #valid else $error}
+            
+      {begin draft | if {#square | is like :draft}}
+        {event submit_draft id #event_id | > :submitted}
+      {end draft}
+
+      {begin success | if {event publish id #event_id} else $error}
+        {{@SITE.path}/events/{event find by_ids #event_id | __.#1.key} | > :url}
+        {notice set value {* (:message "<strong>Success!</strong> This event is now published at <a href='{@url}'>{@url}</a>" :type :success)}}
+      {end success}
+            
+            
+            
+    {end validate}
+  {end publish}
+  {begin unpublish | if {#action | is like :unpublish}}
+    {begin validate | if #valid else $error}
+      {begin success | if {event unpublish id #event_id}}
+        {notice set value {* ( :message "<strong>Success!</strong> That event has been unpublished." :type :success)}}  
+      {end success}
+    {end validate}
+  {end unpublish}
+{end verbatim}
+</textarea>
+</form>
+</div>
+{begin js | process escape}
+  
+  <script>
+  $(document).ready(function(){
+    $('button[value="submit_draft"]').on('click',function(e) {
+      e.preventDefault();
+      
+      
+      bootbox.dialog({
+        message: "Are you sure you want to submit this for approval? You will not have another chance to edit it. Make sure you've added <strong>tickets</strong> (if applicable) and an <strong>image</strong>.",
+        buttons: {
+          danger: {
+            label: "No.",
+            className: "btn-danger",
+          },
+          success: {
+            label: "Yes! Submit this event.",
+            className: "btn-success",
+            callback: function () {
+              $('<input />').attr('type', 'hidden')
+              .attr('name', 'action')
+              .attr('value', 'submit_draft')
+              .appendTo('#event-form');
+              $('#event-form').submit();
+            }
+          }
+        }
+      });
+    });
+  });
+</script>
+{end js}
+{end layout}
+

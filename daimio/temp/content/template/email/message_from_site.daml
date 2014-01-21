@@ -1,0 +1,9 @@
+{#message.name} has submitted a message via the soundoffca.ca contact form.
+
+{begin ham | foreach with #message}
+## {key}
+{value}
+{end ham}
+
+## I'm interested in...
+{#interested_in}

@@ -1,0 +1,20 @@
+{begin layout | merge with (@event) | if {permit i_can has (:events #id) to :edit} else "<span class='alert alert-danger'>You do not have permission to view this event.</span>"}
+
+  <h3>{@event.name} on {@event.start_date.sec | time represent as "M d, Y"} <small>{@total_tickets | collection count} attendees</small></h3>
+
+  <ul class="list-unstyled">  
+    {begin foo | merge with @profiles}
+      <li>  
+        <strong>{my.firstname} {my.lastname} - {member find by_ids _id | __.#1.depot.email}</strong>
+        <ul class="list-unstyled">   
+          {begin tickets | merge with @tickets.{_id}}
+            <li>&#9744; {@ttypes.{type} | __.name}</li>
+          {end tickets}
+        </ul>
+        <hr>
+      </li>          
+    {end foo}
+
+  </ul>
+
+{end layout}

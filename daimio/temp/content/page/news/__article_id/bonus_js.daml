@@ -1,0 +1,18 @@
+{begin js | process escape}
+  <script>
+  $(document).ready(function(){
+    // cache container
+    var $container = $('.iso-container');
+    // initialize isotope
+    $container.imagesLoaded( function(){
+      $container.isotope({
+        masonryHorizontal: {
+          rowHeight: 60          
+        }
+      });
+    }); 
+  });
+  </script>
+{end js}
+
+    

@@ -1,0 +1,10 @@
+{* (
+	:page { * (
+		:title "{@article.#1.name}"
+		:description "{@article.#1.summary}"
+		:keywords "{@article.#1.tags | foreach string "{value}" glue ", "}"
+		:body-classes "short-header"
+		:body-id "news"
+    :classes "detail"    
+	)}
+	) | foreach string "{array union values (value @metadata.{key}) | > {"metadata.{key}"}}" }

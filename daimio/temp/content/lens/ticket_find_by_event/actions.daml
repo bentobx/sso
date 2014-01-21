@@ -1,0 +1,4 @@
+{begin nullblock | process consume | @return}
+  {permit superdo command "{ticket find by_events event | > :return}"}
+{end nullblock}
+

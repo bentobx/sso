@@ -1,0 +1,9 @@
+{* (
+  :site {* (
+    :name "Sound Off! By the Schizophrenia Society of Ontario"
+    :description ""
+    :keywords ""
+    :tagline ""
+  )}
+) | > :metadata | ""}
+{%metadata | is like "/some weird string/" | not | then "{%metadata}" | proc | ""}

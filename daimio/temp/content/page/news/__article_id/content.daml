@@ -3,6 +3,12 @@
     <div class="col-md-8">
       <div class="post_body">    
         {depot.body | string markdown}
+        {files | collection remove path :jumbotron | > :sidebar | ""}
+        {begin images | foreach with @sidebar}
+          <figure>
+            <img src="{value}" class="item img-responsive">
+          </figure>
+        {end images}  
       </div>
     </div>
     <div class="col-md-4">

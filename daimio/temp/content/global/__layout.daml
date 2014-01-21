@@ -1,5 +1,5 @@
 {%global/header}
-<body id="" data-spy="scroll">
+<body id="{@metadata.page.body-id}" class="{@metadata.page.body-classes}" data-spy="scroll">
   
   {%nav}
 

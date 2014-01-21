@@ -8,7 +8,7 @@
         <p class="byline"><span><strong>{pubdate.sec | time represent as "F j, Y"}</strong> // {@author.my.firstname} {@author.my.lastname}</span></p>
     </div>
     <div class="col-md-6">
-      {depot.summary | string textile}
+      {depot.body | string markdown}
       <a title="{title}" class="more" href="{@SITE.path}/news/{key}">Read more <span class="glyphicon glyphicon-chevron-right"></span></a>
 
     </div>

@@ -11,7 +11,7 @@
     <div class="container">
       <div id="jumbo-header">
         <h2><span>{name}</span></h2>         
-        <h3>{depot.summary | string textile}</h3>
+        <h3>{depot.summary | string markdown}</h3>
         {/<p class="lead byline"><span><em>by</em> {@author.my.firstname} {@author.my.lastname}</span></p>}
         <p class="published"><span>{pubdate.sec | time represent as "F j, Y"}</span></p>
       </div>

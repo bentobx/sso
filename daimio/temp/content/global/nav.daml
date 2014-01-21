@@ -11,10 +11,10 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#get-involved">Get Involved</a></li>
-        <li><a href="#">News</a></li>
+        <li class="active"><a href="{@SITE.path}/">Home</a></li>
+        <li><a href="{@SITE.path}/about">About</a></li>
+        <li><a href="{@SITE.path}/#get-involved">Get Involved</a></li>
+        <li><a href="{@SITE.path}/news">News</a></li>
         <li><a href="http://bit.ly/L9V5cz">Donate</a></li>
       </ul>
       <p class="navbar-text pull-right">Got a mental health question? <a href="http://www.schizophrenia.on.ca/Programs-Services/Ask-the-Expert">Don't wait and ask an expert!</a></p>

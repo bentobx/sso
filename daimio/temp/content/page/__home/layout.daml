@@ -2,9 +2,6 @@
 <section id="charts">
   <div class="container">
     {%charts}
-    <div class="alert alert-info">
-      <p class="lead">Now get involved: <a href="#">Become a youth ambassador</a>, <a href="#">Get a Sound Off Day at school</a>, <a href="#">Raise money</a> </p>
-    </div>
   </div>
 </section>
 

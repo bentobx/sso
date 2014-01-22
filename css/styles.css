@@ -5770,6 +5770,9 @@ body .navbar {
   border-radius: 0;
   margin-bottom: 0;
 }
+body#home #primary-logo {
+  margin-bottom: 50px;
+}
 body h1,
 body h2,
 body h3,
@@ -5803,7 +5806,6 @@ body h4 {
   background: #17242f;
   height: 300px;
   padding: 20px 0;
-  margin-top: 50px;
 }
 #footer ul#extras li {
   text-align: right;
@@ -5829,29 +5831,30 @@ body h4 {
   background-size: cover;
   background-image: url(../images/sso_bg.gif);
 }
-.jumbotron #primary-logo {
-  margin-bottom: 50px;
+.jumbotron .mini-block {
+  padding: 0;
+  background: transparent;
+  color: #83a5c2;
+  text-align: center;
 }
-.jumbotron #lead {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
+.jumbotron .lead-block {
+  background: rgba(6, 10, 13, 0.19999999999999996);
+  padding: 20px 20px 10px 20px;
   color: #808080;
 }
-.jumbotron #lead h3 {
+.jumbotron .lead-block h3 {
   margin: 0 0 10px 0;
   font-weight: 900;
-  font-size: 32px;
-  color: #000000;
+  font-size: 36px;
+  color: #ffffff;
+  letter-spacing: 2px;
 }
-.jumbotron #lead p {
-  margin-bottom: 0;
-  color: #000000;
-}
-.jumbotron #lead p:first-child {
+.jumbotron .lead-block p {
   margin-bottom: 20px;
+  color: #83a5c2;
 }
-.jumbotron #lead p strong {
-  color: #000000;
+.jumbotron .lead-block p strong {
+  color: #eaeff4;
   font-weight: 900;
 }
 .jumbotron #count {
@@ -5874,10 +5877,13 @@ body h4 {
 #cta p em {
   color: #768d0a;
 }
-#cta .btn {
+#cta #sound-off-button {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 6px;
   font-family: "tablet-gothic-semi-condensed", sans-serif;
   text-transform: uppercase;
-  font-size: 44px;
   font-weight: 900;
   letter-spacing: 2px;
   color: #000;
@@ -5886,7 +5892,27 @@ body h4 {
   font-style: oblique;
   box-shadow: 5px 5px 0px 5px black;
 }
-#cta .btn:hover {
+@media (min-width: 480px) {
+  #cta #sound-off-button {
+    font-size: 24px;
+  }
+}
+@media (min-width: 768px) {
+  #cta #sound-off-button {
+    font-size: 24px;
+  }
+}
+@media (min-width: 992px) {
+  #cta #sound-off-button {
+    font-size: 34px;
+  }
+}
+@media (min-width: 1200px) {
+  #cta #sound-off-button {
+    font-size: 44px;
+  }
+}
+#cta #sound-off-button:hover {
   background: #c6ed10;
 }
 .alert a {
@@ -5903,15 +5929,12 @@ body h4 {
   font-weight: 400;
 }
 section {
-  margin: 40px 0;
+  padding: 20px 0 40px 0;
+  margin: 40px 0 0 0;
 }
 section#charts {
   background: #eaeff4;
   margin-top: 0;
-}
-section#charts,
-section#getinvolved {
-  padding: 20px 0 40px 0;
 }
 section#charts hr,
 section#getinvolved hr {

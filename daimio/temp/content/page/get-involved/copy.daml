@@ -115,7 +115,7 @@
                   {exec admin_send_email
                     subject {"[Sound OFF] Comments from {#message.name}"}
                     body {%template/email/message_from_site}
-                    | process consume}
+                    | process consume}}
                     
                   {stuff add type :web_message | > :message_id}
                     

@@ -26,7 +26,7 @@
       {/<a href="{@SITE.path}/events/{_id}" class="btn btn-primary pull-right">Register</a>    }
     {end future}
     <h4><a href="{@SITE.path}/events/{key | else _id}" class="title">{name}</a></h4>
-    {depot.summary | string textile}
+    {depot.summary | string markdown}
   </div>
 </div>
 

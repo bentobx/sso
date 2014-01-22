@@ -1,3 +1,2 @@
-<section id="getinvolved">{%get_involved}</section>
-<section id="events"></section>
+{/<section id="events"></section>}
 {%global/sound_off_forms}

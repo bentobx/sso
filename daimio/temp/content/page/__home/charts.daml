@@ -15,7 +15,7 @@
     | @my_totals.no  | +: no  | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :no 
     | ""}
-    <div class="col-md-4">  
+    <div class="col-xs-12 col-md-4">  
       <h2>{name}</h2>
       
       <ul data-pie-id="my-{name}-chart" class="hide">

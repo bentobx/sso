@@ -1,0 +1,9 @@
+{* (
+	:page { * (
+		:title "Sound Off!"
+		:description ""
+		:keywords ""
+		:body-id "home"
+    :classes "detail"    
+	)}
+	) | foreach string "{array union values (value @metadata.{key}) | > {"metadata.{key}"}}" }

@@ -1,7 +1,44 @@
 {%jumbotron}
+
+<section id="carousel">
+  {%carousel}
+    
+</section>
 <section id="charts">
+
   <div class="container">
     {%charts}
+  </div>
+</section>
+
+<section id="connect">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        {begin post | merge with @articles}
+          {lens profile_find id author | __.#1 | > :author | ""}
+          <h3><a title="{title}" class="" href="{@SITE.path}/news/{key}">{name}</a></h3>
+          {depot.body | string markdown}
+          <a title="{title}" class="more" href="{@SITE.path}/news/{key}">Read more <span class="glyphicon glyphicon-chevron-right"></span></a>
+          <hr>
+        {end post}
+        {begin no_articles | if {not @articles}}
+          <p>There are no matching articles.</p>
+        {end no_articles}
+      </div>
+      <div class="col-md-6">
+        {begin js | process escape}
+
+
+          <a class="twitter-timeline" height="550" width="100%" href="https://twitter.com/soundoffca" data-widget-id="425841177863020544" data-link-color="#17242f" data-border-color="eaeff4">Tweets by @soundoffca</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        
+        {end js}        
+        
+      </div>
+    </div>
+
+
   </div>
 </section>
 

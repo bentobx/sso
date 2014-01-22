@@ -1,8 +1,8 @@
 {begin noarticle}
   <div class="container">
 
-      <h2>404</h2>
-      <p class="lead">We are sorry, but there's no article at this address. Back to <a href="{@SITE.path}/news">News</a>.</p>
+    <h2>404</h2>
+    <p class="lead">We are sorry, but there's no article at this address. Back to <a href="{@SITE.path}/news">News</a>.</p>
 
   </div>
 {end noarticle}

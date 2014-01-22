@@ -1,7 +1,7 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
   <div class="container">
-    <img src="{@SITE.path}/images/soundoff_logo_rgb-large-green.png" alt="" class="center-block" id="primary-logo">
+    <img src="{@SITE.path}/images/soundoff_logo_rgb-large-green.png" alt="" class="center-block img-responsive" id="primary-logo">
     {%jumbotron_content}
   </div>
 </div>

@@ -61,7 +61,7 @@
 
 
 {/ ADD'L INFO ------------------------------------------ }
-<form method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal" action="{@SITE.path}/#getinvolved">
+<form method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal" action="{@SITE.path}/get-involved">
   
   <div class="modal fade" id="sound-off-step-2">
     <div class="modal-dialog">
@@ -120,7 +120,7 @@
           </textarea>
         </div>
         <div class="modal-footer">
-          <input type="submit" value="Skip" class="btn btn-default btn-lg"> 
+          <input type="button" data-dismiss="modal" value="Skip" class="btn btn-default btn-lg"> 
           <input type="submit" value="Submit Optional Answers" class="btn btn-primary btn-lg"> 
         </div>
       </div><!-- /.modal-content -->

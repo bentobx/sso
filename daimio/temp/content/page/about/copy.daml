@@ -1,4 +1,8 @@
 <section id="about">
+  <div class="page-header">
+    <h2>About</h2>
+  </div>
+  
   <div class="row">
     <div class="col-md-3">
     
@@ -22,7 +26,7 @@
 
     
       <div class="alert alert-info">
-        <p class="lead"><a href="{@SITE.path}/#getinvolved">Learn how you too can be involved and do more</a></p>
+        <p class="lead"><a href="{@SITE.path}/get-involved">Learn how you too can be involved and do more</a></p>
       </div>  
     </div>
   </div>

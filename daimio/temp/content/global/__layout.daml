@@ -2,29 +2,27 @@
 <body id="{@metadata.page.body-id}" class="{@metadata.page.body-classes}" data-spy="scroll">
   
   {%nav}
-
-
   {%layout} 
   <div id="footer">
     <div class="container">
       <footer>
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-4 col-xs-12">
             <p>&copy; {@metadata.company.name} {time represent as :Y}</p>
             <div class="socialbar_transparent borderless">
               <ul class="ss sscircle">
-                <li class="twitter"><a href="https://twitter.com/peace_of_minds">@peace_of_minds</a></li>
+                <li class="twitter"><a href="https://twitter.com/soundoffca">@soundoffca</a></li>
                 <li class="facebook"><a href="https://www.facebook.com/SchizophreniaSocietyON">/SchizophreniaSocietyON</a></li>
               </ul>  
             </div>
             
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 col-xs-12">
             <p><span class="caps">SOUND OFF</span> is guided by a <a href="#">Youth Advisory Council</a> with support from the <a href="http://www.schizophrenia.on.ca/">Schizophrenia Society of Ontario</a>.</p>
         
             
             </div>
-          <div class="col-md-4">
+          <div class="col-md-4 col-xs-12">
             
             <div class="row">
               <div class="col-md-6">

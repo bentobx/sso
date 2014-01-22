@@ -1,2 +1,3 @@
 {protocol find by_ids @SSO.protocol_id | __.#1 | __.q_list | mongous sanitize | __.pq | protoquestion find __ | > :protoquestions}
 {study yesno id @SSO.study_id | > :totals}
+{article find options {* (:sort {* (:pubdate "-1")})} | > :articles | ""}

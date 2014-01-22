@@ -75,20 +75,20 @@
                       <label class="form-label">I'm interested in...</label>   
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Spreading the word" name="interested_in[]">
+                          <input type="checkbox" value="Spreading the word" name="message[interested_in][]">
                           Spreading the word
                         </label>
                       </div>
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Expressing myself" name="interested_in[]"> 
+                          <input type="checkbox" value="Expressing myself" name="message[interested_in][]"> 
                           Expressing myself
                         </label>
                       </div>
                         
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Changing the system" name="interested_in[]">
+                          <input type="checkbox" value="Changing the system" name="message[interested_in][]">
                           Changing the system
                         </label>
                       </div>

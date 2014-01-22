@@ -20,6 +20,6 @@
     <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off Here!</a>
   </div>
   <div id="count">
-    <p class="lead">{@totals.#1.total} Sound Offs!</p>
+    <p class="lead">{@totals.#1.total | +: 250} Sound Offs!</p>
   </div>
 </div>

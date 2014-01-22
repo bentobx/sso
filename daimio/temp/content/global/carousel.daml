@@ -1,23 +1,7 @@
-{* (
-"I think we need 2 work to reduce stigma associated with mental health issues"
-"Places [where] youth can go to talk to someone about how they are feeling [would be good]"
-"[I think] we should be teaching stress management techniques"
-"I [feel] mental health gets overlooked and isn't obvious as other physical impediments"
-"[I feel] we as students...need more community education available to help us be more aware of the mental health issues around us..."
-"[I feel] there is a lot of ignorance... [for] most people if something doesn't affect them they won't care"
-"Stigma around mental health issues [is an issue]. Students [are] suffering mental health issues but don't ask for help because they don't want admit [it]"
-"In my opinion, mental health problems are treated as less important than other health problems, which isn't right. I know a lot of people struggling from mental health problems and they deserve more support."
-"[I feel] more access to mental health care [and] shorter waits to get help[would be beneficial]."
-"I would like if parents would stop kicking out their kids especially without giving them any help or support"
-"The friendliness to others with illness needs to be improved along with raising awareness"
-"[I] definitely feel their needs to be more education in high schools, more than one presentation in the 4 years your are there"
-"[I feel] open door polic[ies] [and] places people can go to get support and feel comfortable is important"
-"The truth is we all have mental health and we need to look after it to remain...healthy."
-"[we] need to [stop] marginalizing the mentally ill"
-) | > :quotes | ""}
-<hr />
+{* ("I think we need 2 work to reduce stigma associated with mental health issues" "Places [where] youth can go to talk to someone about how they are feeling [would be good]" "[I think] we should be teaching stress management techniques" "I [feel] mental health gets overlooked and isn't obvious as other physical impediments" "[I feel] we as students...need more community education available to help us be more aware of the mental health issues around us..." "[I feel] there is a lot of ignorance... [for] most people if something doesn't affect them they won't care" "Stigma around mental health issues [is an issue]. Students [are] suffering mental health issues but don't ask for help because they don't want admit [it]" "In my opinion, mental health problems are treated as less important than other health problems, which isn't right. I know a lot of people struggling from mental health problems and they deserve more support." "[I feel] more access to mental health care [and] shorter waits to get help[would be beneficial]." "I would like if parents would stop kicking out their kids especially without giving them any help or support" "The friendliness to others with illness needs to be improved along with raising awareness" "[I] definitely feel their needs to be more education in high schools, more than one presentation in the 4 years your are there" "[I feel] open door polic[ies] [and] places people can go to get support and feel comfortable is important" "The truth is we all have mental health and we need to look after it to remain...healthy." "[we] need to [stop] marginalizing the mentally ill") | > :quotes | ""}
 
-<div class="clearfix">
+{/
+<hr /><div class="clearfix">
   <div id="carousel-example-captions" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
       <li data-target="#carousel-example-captions" data-slide-to="0" class="active"></li>
@@ -27,7 +11,7 @@
     <div class="carousel-inner">
 
       {begin quote | foreach with @quotes}
-        <div class="item active">
+        <div class="item">
           <div class="carousel-caption">
             <p style="color: #000;">{value}</p>
           </div>
@@ -41,4 +25,4 @@
       <span class="glyphicon glyphicon-chevron-right"></span>
     </a>
   </div>
-</div>
+</div>}

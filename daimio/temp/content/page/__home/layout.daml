@@ -1,10 +1,10 @@
 {%jumbotron}
 
-<section id="carousel">
+{/<section id="carousel">
   {%carousel}
     
 </section>
-<section id="charts">
+}<section id="charts">
 
   <div class="container">
     {%charts}

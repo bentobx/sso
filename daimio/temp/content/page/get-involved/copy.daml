@@ -126,7 +126,7 @@
                     :message "<strong>Success!</strong>  We've received your message and we'll get back to you soon."
                     :type :success
                   )}}
-                  {page redirect to {"{@SITE.path}/#contact-thanks"}}
+                  {page redirect to {"{@SITE.path}/get-involved/#contact-thanks"}}
                 {end good}
     
     

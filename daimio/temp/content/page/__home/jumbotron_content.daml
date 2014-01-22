@@ -17,7 +17,7 @@
 <div class="text-center center-block">
   <div id="cta">
     <p class="lead">Your Voice Matters</p>    
-    <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off!</a>
+    <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off Here!</a>
   </div>
   <div id="count">
     <p class="lead">{@totals.#1.total} Sound Offs!</p>

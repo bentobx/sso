@@ -31,6 +31,7 @@
 
       // answers-in -> {__ | >$answers | __.#1} -> @answers-out
       answers-in -> cron-answers
+      
   </script>
 
 
@@ -275,7 +276,7 @@
         
       // THINK: why do we need _foo instead of just __ ?
 
-      answers-in -> user-range-home -> @user-range-home
+      @init -> user-range-home -> @user-range-home
       @user-range -> user-range-finder -> qpudraw
       cron-answers -> {$cron-answers.#-1.user} -> qpudraw -> @qpu-out
   </script>
@@ -288,16 +289,32 @@
   <script type="text/daml" class="spaceseeds">
     outer
       @bardiv dom-set-html
+      
+      $bar-answers {}
+
+      baragg
+        { __ | group by :question
+        | map block "{ __ | group by :answer | >ag 
+                     | ({_ag.#1 | count} {_ag.#2 | count}) }"
+        | >$bar-answers
+        }
+        
+      baradd
+        { __ | >ship
+        | $bar-answers.{_ship.question}.{_ship.answer}
+        | add 1
+        | >$bar-answers.{_ship.question}.{_ship.answer}
+        }
 
       bardraw
-        {begin qs | each data {__in | group by :question}}
-          {__ | group by :answer | >agroup ||}
+        {begin qs | each data __in}
           <p>{_key}</p>
-          <div style="height:20px; width:{_agroup.#1 | count | >ag1}px; background-color:pink">Yes {_ag1}</div>
-          <div style="height:20px; width:{_agroup.#2 | count | >ag2}px; background-color:powderblue">No {_ag2}</div>
+          <div style="height:20px; width:{_value.#1}px; background-color:pink">Yes {_value.#1}</div>
+          <div style="height:20px; width:{_value.#2}px; background-color:powderblue">No {_value.#2}</div>
         {end qs}
 
-      answers-in -> bardraw -> @bardiv
+      answers-in -> baragg -> bardraw -> @bardiv
+      add-answer -> baradd -> bardraw
   </script>
 
 
@@ -306,14 +323,29 @@
   <script type="text/daml" class="spaceseeds">
     outer
       @compact dom-set-text
+      $compact-answers {}
+
+      add-compact-answer
+        { __ | >ship
+        | cond ( 
+            $compact-answers.{_ship.user} "{  _ship.answer  | >$compact-answers.{_ship.user}.#0 }"
+            $compact-answers              "{ (_ship.answer) | >$compact-answers.{_ship.user}    }"
+            :outherwise                   "{* (_ship.user (_ship.answer)) | >$compact-answers   }"
+          )
+        | run with {* (:ship _ship)}
+        }
+
+      // TODO: make this work: 
+      // add-compact-answer {__.answer | >$compact-answers.{__in.user}.#0}
 
       compact 
-        {__ | group by :user | map block "{__.*.answer}"}
+        {__ | group by :user | map block "{__.*.answer}" | >$compact-answers}
 
       answers-in -> compact -> @compact
+      add-answer -> add-compact-answer -> @compact
   </script>
 
-  
+
 
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {      
@@ -325,6 +357,19 @@
     })
   </script>
   {end js}
+
+
+<!--
+    // OK SO OK
+    // you should do some stuff:
+    // - adapt widgets to have an 'add answer' port on their subspace
+    // - make a frickin widget builder
+    // - and a template thing
+    // - and downports
+    // - and persistent data structures
+    // - and an editor
+    // - and a viz editor
+-->
 
 
 
@@ -483,13 +528,11 @@
       // ADD AN ANSWER
 
       add-answer 
-        { $answers 
-        | poke {__in} path "#0"
-        | >$answers
-        | * (:key :answers :value __) }
+        { __ 
+        | >$answers.#0
+        | __in}
 
-      add-answer -> @local-write
-      add-answer -> {__.value} -> answers-in
+      add-answer -> {* (:key :answers :value $answers)} -> @local-write
       
   </script>
 

@@ -1,11 +1,19 @@
 {%jumbotron}
 
-{/<section id="carousel">
-  {%carousel}
-    
+<section id="quote-box">
+  <div class="container">
+    <div id="quotes">
+      <div id="quotes-inner">
+        {begin quote | foreach with @quotes}
+          <div class="item">
+            <p>&#8220;{value}&#8221;</p>
+          </div>
+        {end quote}
+      </div>
+    </div>
+  </div>
 </section>
-}<section id="charts">
-
+<section id="charts">
   <div class="container">
     {%charts}
   </div>

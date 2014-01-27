@@ -1,17 +1,11 @@
 <div class="row">
   <div class="col-md-6">
     <div class="lead-block">
-      <h3>1 in 5 of us will experience a mental illness</h3>
-      <p>Don't let silence or stigma define you. Your voice must be heard. <strong>What do Ontario's youth have to say about the state of mental health in the province?</strong></p>      
-      <p><strong>SOUND OFF</strong> is a youth-led social initiative to get young people mobilized around mental health issues. Tell us what is working (or not working) to support your mental health.</p>
+      {%global/editable/markdown/lead_block | string markdown}
     </div>
   </div>
   <div class="col-md-6">
-    <iframe width="100%" height="315" src="//www.youtube.com/embed/HEn1DckAsp8?wmode=transparent" frameborder="0" allowfullscreen></iframe>    
-    <div class="mini-block">
-      <div class="text-center"><h3><span class="glyphicon glyphicon-arrow-up"></span></h3></div>
-      <p>Watch breakdancer Mike Prosserman SOUND OFF!</p>
-    </div>
+      {%global/editable/html/video_feature}
   </div>
 </div>
 <div class="text-center center-block">

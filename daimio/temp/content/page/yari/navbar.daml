@@ -1,1 +1,28 @@
-{%page/members/account/navbar}
+<nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{@SITE.path}/members/profile/edit"><strong>{@metadata.site.name}</strong></a>
+    </div>
+  
+    <ul class="nav navbar-nav">
+  
+      {begin blogger | if {:blogger | is in @MY.keychain}}
+        <li><a href="{@SITE.path}/yari"><i class="glyphicon glyphicon-list-alt"></i> Articles</a></li>
+      {end blogger}
+          
+      {begin admin | if {:admin | is in @MY.keychain}}
+        <li><a href="{@SITE.path}/yari/events"><i class="glyphicon glyphicon-calendar"></i> Events</a></li>
+        <li><a href="{@SITE.path}/yari/pages"><i class="glyphicon glyphicon-align-left"></i> Content</a></li>
+      {end admin}
+
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+  
+      <li class="divider-vertical"></li>
+          
+      {/  <li><a href="{@SITE.path}/members/account/edit"><i class="glyphicon glyphicon-cog"></i>  Account Settings</a></li>}
+      <li><a href="{@SITE.path}">Back to site <i class="glyphicon glyphicon-arrow-right"></i></a></li>
+      <li><a href="#" onclick="$('#logout').submit();">Log out <i class="glyphicon glyphicon-share-alt"></i></a></li>
+    </ul>
+  </div>
+</nav>

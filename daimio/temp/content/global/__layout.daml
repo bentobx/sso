@@ -18,9 +18,7 @@
             
           </div>
           <div class="col-md-4 col-xs-12">
-            <p><span class="caps">SOUND OFF</span> is guided by a <a href="#">Youth Advisory Council</a> with support from the <a href="http://www.schizophrenia.on.ca/">Schizophrenia Society of Ontario</a>.</p>
-        
-            
+                {%global/editable/markdown/footer_credits | string markdown}  
             </div>
           <div class="col-md-4 col-xs-12">
             

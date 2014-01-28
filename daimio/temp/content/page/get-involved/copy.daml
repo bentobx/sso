@@ -3,36 +3,45 @@
   <div class="page-header">
     <h2>Get Involved</h2>
   </div>
-  <p class="section-lead">Take action with youth across Ontario by raising awareness about mental health issues or becoming part of our cause. <br><strong>Here&#8217;s what you can do:</strong></p>  
-  <div class="row">
+  <div class="section-lead">
+    {%global/editable/markdown/get_involved_lead_text | string markdown}
+  </div>
+    
+     <div class="row">
     <div class="col-md-8">
-      <h4>Spread the Word</h4>
+      <h4>{%global/editable/text/get_involved_block_1_headline}</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_1.gif" class="img-responsive">
         </div>
         <div class="col-md-8">
-          <p class="lead">Raise awareness, engage your peers in the conversation and set the direction that <span class="caps">SOUND OFF</span> will take next.</p>
+          <p class="lead">
+            {%global/editable/text/get_involved_block_1_copy}
+          </p>
         </div>
       </div>
       <hr>
-      <h4>Express Yourself</h4>
+      <h4>{%global/editable/text/get_involved_block_2_headline}</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_2.gif" class="img-responsive">
         </div>
         <div class="col-md-8">
-          <p class="lead">Start an art project to raise awareness about mental health.</p>
+          <p class="lead">
+            {%global/editable/text/get_involved_block_2_copy}
+          </p>
         </div>
       </div>
       <hr>
-      <h4>Change the System</h4>
+      <h4>{%global/editable/text/get_involved_block_3_headline}</h4>
       <div class="row">
         <div class="col-md-4">
           <img src="{@SITE.path}/images/get_involved_3.gif" class="img-responsive">
         </div>
         <div class="col-md-8">
-          <p class="lead">Dedicate an entertainment, sporting or fundraiser event to the cause to get others taking action on mental health.</p>
+          <p class="lead">
+            {%global/editable/text/get_involved_block_3_copy}
+          </p>
         </div>
       </div>
     </div>
@@ -75,20 +84,20 @@
                       <label class="form-label">I'm interested in...</label>   
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Spreading the word" name="interested_in[]">
+                          <input type="checkbox" value="Spreading the word" name="message[interested_in][]">
                           Spreading the word
                         </label>
                       </div>
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Expressing myself" name="interested_in[]"> 
+                          <input type="checkbox" value="Expressing myself" name="message[interested_in][]"> 
                           Expressing myself
                         </label>
                       </div>
                         
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" value="Changing the system" name="interested_in[]">
+                          <input type="checkbox" value="Changing the system" name="message[interested_in][]">
                           Changing the system
                         </label>
                       </div>
@@ -115,7 +124,7 @@
                   {exec admin_send_email
                     subject {"[Sound OFF] Comments from {#message.name}"}
                     body {%template/email/message_from_site}
-                    | process consume}
+                    | process consume}}
                     
                   {stuff add type :web_message | > :message_id}
                     
@@ -126,7 +135,7 @@
                     :message "<strong>Success!</strong>  We've received your message and we'll get back to you soon."
                     :type :success
                   )}}
-                  {page redirect to {"{@SITE.path}/#contact-thanks"}}
+                  {page redirect to {"{@SITE.path}/get-involved/#contact-thanks"}}
                 {end good}
     
     

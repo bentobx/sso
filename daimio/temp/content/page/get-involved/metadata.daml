@@ -1,0 +1,9 @@
+{* (
+	:page { * (
+		:title "Get Involved"
+		:description "Raise awareness, engage your peers in the conversation and set the direction that SOUND OFF will take next."
+		:keywords "youth action committee, youth with schizophrenia, community development"
+		:body-id "about"
+    :classes "detail"    
+	)}
+	) | foreach string "{array union values (value @metadata.{key}) | > {"metadata.{key}"}}" }

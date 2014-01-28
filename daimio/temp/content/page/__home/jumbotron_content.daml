@@ -1,25 +1,19 @@
 <div class="row">
   <div class="col-md-6">
     <div class="lead-block">
-      <h3>1 in 5 of us will experience a mental illness</h3>
-      <p>Don't let silence or stigma define you. Your voice must be heard. <strong>What do Ontario's youth have to say about the state of mental health in the province?</strong></p>      
-      <p><strong>SOUND OFF</strong> is a youth-led social initiative to get young people mobilized around mental health issues. Tell us what is working (or not working) to support your mental health.</p>
+      {%global/editable/markdown/lead_block | string markdown}
     </div>
   </div>
   <div class="col-md-6">
-    <iframe width="100%" height="315" src="//www.youtube.com/embed/HEn1DckAsp8" frameborder="0" allowfullscreen></iframe>    
-    <div class="mini-block">
-      <div class="text-center"><h3><span class="glyphicon glyphicon-arrow-up"></span></h3></div>
-      <p>Watch breakdancer Mike Prosserman SOUND OFF!</p>
-    </div>
+      {%global/editable/html/video_feature}
   </div>
 </div>
 <div class="text-center center-block">
   <div id="cta">
     <p class="lead">Your Voice Matters</p>    
-    <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off!</a>
+    <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off Here!</a>
   </div>
   <div id="count">
-    <p class="lead">{@totals.#1.total} Sound Offs!</p>
+    <p class="lead">{@totals.#1.total | +: 250} Sound Offs!</p>
   </div>
 </div>

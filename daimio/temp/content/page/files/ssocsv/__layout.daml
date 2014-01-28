@@ -1,0 +1,2 @@
+time,question,answer,background,birth_year,city,lgbtq,ontario,pronoun
+{study decompose_answers id @SSO.study_id | collection to_csv}

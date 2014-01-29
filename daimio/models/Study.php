@@ -298,7 +298,8 @@ class Study
 
       $composite['answer'] = $answer['input'];
       $composite['time'] = $answer['date']->sec;
-      $composite['user'] = $answer['user'];      
+      $composite['user'] = $answer['user']; 
+      $composite['details'] = $composite[(string) $pq['_id']];     
       
       $pq = $pqs[(string) $questions[(string) $answer['question']]['pq']];
 
@@ -333,6 +334,7 @@ class Study
       $new_list[$key]['lgbtq']   = $answer['lgbtq'];
       $new_list[$key]['ontario'] = $answer['ontario'];
       $new_list[$key]['pronoun'] = $answer['pronoun'];
+      $new_list[$key]['details'] = $answer['details'];
     }
     
     return $new_list;

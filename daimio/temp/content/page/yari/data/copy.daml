@@ -11,6 +11,7 @@
       <th>Time</th>
       <th>Question</th>
       <th>Answer</th>
+      <th>Details</th>
       <th>Background</th>
       <th>Birth Year</th>
       <th>City</th>
@@ -25,6 +26,7 @@
         <td>{time | time represent as "M d, Y g:ia"}</td>
         <td>{question}</td>
         <td>{answer}</td>
+        <td>{details}</td>
         <td>{background}</td>
         <td>{birth_year}</td>
         <td>{city}</td>

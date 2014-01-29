@@ -1,0 +1,20 @@
+<section id="about">
+  <div class="page-header">
+    <h2>About</h2>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3">
+      <div class="lead">
+        {%global/editable/markdown/about_lead_column | string markdown}  
+      </div>
+    </div>
+    <div class="col-md-5">
+      {%global/editable/markdown/about_main_column | string markdown}          
+    </div>
+    <div class="col-md-4">
+      {%global/editable/markdown/about_sidebar_column | string markdown}  
+    </div>
+  </div>
+
+</section>

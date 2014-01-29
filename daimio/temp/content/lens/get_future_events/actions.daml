@@ -1,0 +1,8 @@
+{begin nullblock | process consume | @return}
+  {event find
+    by_date_range (:today "3 months")
+    by_square :published
+    options {* (:limit {limit | else 100} :sort {* (:start_date 1)})}
+  | mongous sanitize
+  | > :return}
+{end nullblock}

@@ -1,0 +1,74 @@
+<div class="page-header">
+  <h1>Events</h1>
+</div> 
+
+<h3>My Events</h3>
+<p>You are listed as the <strong>organizer</strong> for the following events:</p>
+{event find options {* (:depot.organizer @MY.id)} | > :my_events | ""}
+<ul class="list-unstyled">
+{begin list | merge with @my_events}
+<li>  <span class="label">{start_date.sec | time represent as "M d, Y"}</span> <strong>{name}</strong>
+  {begin approved}
+    <span class="badge badge-success">Approved</span>
+  {end approved}
+  
+  {begin pending}
+    <span class="badge badge-error">Pending</span>
+  {end pending}
+  {"world:*" | is in pcache.view | then $approved else $pending}
+</li>
+{end list}
+
+</ul>
+
+  <a href="{@SITE.path}/yari/events/new" class="pull-right btn btn-large btn-success">New Event</a>
+
+<div id="event_list">
+  <table class="table table-striped table-condensed table-data">
+    <thead>
+      <tr>
+        <th class="title">Name</th>
+        <th class="organizer">Organizer</th>
+        <th class="date">Start Date</th>
+        <th class="status">Tickets Sold</th>
+        <th class="tags">Price</th>
+        <th class="actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {begin events | merge with {event find}}
+        <tr>
+          <td><a href="{@SITE.path}/events/{_id}">{name}</a></td>
+          <td>{profile find by_ids depot.organizer | merge string "{my.firstname} {my.lastname} ({my.professional.company})"}</td>
+          <td>{start_date.sec | time represent as "M d, Y"}</td>
+          <td>
+            {lens get_attendees_by_event event _id | collection count}/{capacity}</td>
+          <td>{price | else "<span class='label label-success'>free</span>"}</td>
+          <td>
+            
+            
+            <form method="POST" id="replicate" class="form-inline">
+              <input type="hidden" name="event_id" value="{_id}">
+              <textarea type="hidden" name="commands" id="commands" style="display:none;">
+                {begin verbatim | process escape} 
+                  {event replicate id #event_id | > :event_id}
+                  {notice set value {* ( :message "<strong>Success!</strong> Your event has been replicated!" :type :success)}}  
+                  {page redirect to {"yari/events/{@event_id}"}}
+                {end verbatim}
+              </textarea>
+              
+              <div class="btn-group">
+              <a class="btn btn-small" href="{@SITE.path}/events/{_id}"><span class="glyphicon glyphicon-zoom-in"></span> View</a>
+              <a class="btn btn-small" href="{@SITE.path}/yari/events/{_id}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+              
+              <button class="btn btn-small" type="submit"><span class="glyphicon glyphicon-plus"></span> Replicate</button>  
+              </div>
+            </form>
+          </td>
+        </tr>
+      {end events}
+
+    </tbody>
+  </table>
+</div>
+<hr>

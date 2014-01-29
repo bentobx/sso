@@ -1,7 +1,7 @@
 {* (
-  :schools      {* (:name :schools :id :529cea2caa77c4b20a00000c :text "of Ontario youth say <strong>their schools</strong>  are working to support their mental health")}
-  :media        {* (:name :media :id :529cea53aa77c4ba0a00000c :text "of Ontario youth say <strong>the media</strong> is working to support their mental health")}
-  :communities  {* (:name :communities :id :529cea80aa77c4b10a000007 :text "of Ontario youth say <strong>their communities</strong> are working to support their mental health")})
+  :schools      {* (:name :schools :id :529cea2caa77c4b20a00000c :text "of Ontario youth say <strong>their schools</strong>  are working to support their mental health" :yes 45 :no 48)}
+  :media        {* (:name :media :id :529cea53aa77c4ba0a00000c :text "of Ontario youth say <strong>the media</strong> is working to support their mental health" :yes 1 :no 20)}
+  :communities  {* (:name :communities :id :529cea80aa77c4b10a000007 :text "of Ontario youth say <strong>their communities</strong> are working to support their mental health" :yes 10 :no 25)})
 | > :questions | ""}
 
 
@@ -9,12 +9,13 @@
   {begin charts | merge with @questions}
     
     { @totals.{id} | > :my_totals
-    | @my_totals.yes | math divide by @my_totals.total | *: 100 | math round | > :temp 
+    | @my_totals.total | +: yes | +: no | > :my_totals.total
+    | @my_totals.yes | +: yes | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :yes
-    | @my_totals.no  | math divide by @my_totals.total | *: 100 | math round | > :temp 
+    | @my_totals.no  | +: no  | math divide by @my_totals.total | *: 100 | math round | > :temp 
     | if {@temp | less than 1} then 1 else @temp | > :no 
     | ""}
-    <div class="col-md-4">  
+    <div class="col-xs-12 col-md-4">  
       <h2>{name}</h2>
       
       <ul data-pie-id="my-{name}-chart" class="hide">

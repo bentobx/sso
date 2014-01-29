@@ -1,6 +1,2 @@
-<section id="about">{%about}</section>
-<section id="get-involved">{%get_involved}</section>
-<section id="events"></section>
-<section id="resources">{%resources}</section>
-
+{/<section id="events"></section>}
 {%global/sound_off_forms}

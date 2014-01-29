@@ -1,0 +1,102 @@
+{%global/metadata | process consume | %template:yari/news/header}
+<body class="blog" id="{@PAGE.path | string transform old "/(\/|__)/" new ""}">
+  <div class="wrapper">
+    <div id="header">
+      <div id="topofpage">
+        <a href="{@SITE.path}/" title="home"><img src="/images/audit_tree_logo.png" alt="Audit Tree Logo" id="logo"></a>
+        <div id="promo">{%global/promo}</div>
+        <div id="nav">
+          {%template:yari/news/nav}
+        </div>
+      </div>
+      <div id="banner">
+        <div class="col" id="intro">
+          {%intro | string markdown}
+        </div>
+      </div> 
+    </div>
+    <div class="container">
+      <div class="page">
+        <div id="main">
+          <div class="content">
+            {begin blog | if {#1 | is like :blog} | else "{%copy}"}
+              {begin overview | if {not #2}}
+                {%copy}
+              {end overview}
+              <div id="entries">
+                {%body}
+              </div>
+            {end blog}
+          </div>
+        </div>
+        <div id="blog-nav">
+          {%template:yari/news/sidebar}
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div id="footer" class="section">
+    {begin extras | if {#1 | is like :pscbanff2011 | not}}
+      <div class="col-50-group container" id="extras">
+        <div class="first">{%footer_col_1}</div>
+        <div class="last">{%footer_col_3}</div>
+      </div>
+    {end extras}
+
+
+    <div id="contact-bar">
+      <div id="vcard" class="vcard"> 
+        <div id="hcard-Brad-J-Caldwell" class="vcard"> 
+          <span class="url fn n"> 
+            <span class="given-name">Brad</span> 
+            <span class="additional-name"></span> 
+            <span class="family-name">Caldwell</span>   
+          </span> 
+          <div class="org">Audit Tree</div> 
+          <div class="email">
+            {begin enkoder | process escape}
+            {end enkoder}
+
+
+          </div>
+          <div class="adr"> 
+            <span class="locality">Calgary</span>,
+            <span class="region">AB</span> 
+          </div> 
+          <div class="tel">
+          <ul class="list-unstyled">
+            <li>Alberta <strong>(403) 770-2837</strong></li>
+            <li>Fort McMurray <strong>(780) 747-1367</strong></li>
+            <li>BC <strong>(250) 663-8830</strong></li>
+            <li>Toronto <strong>(416) 907-5956</strong></li>
+          </ul>          
+
+
+
+        </div> 
+
+        <div id="network">
+          <h3>Network</h3>
+          <ul>
+            <!--<li><a href="http://twitter.com/audittree">Follow Audit Tree</a></li>-->
+            <li><a href="http://twitter.com/Audit_Tree">Follow us on Twitter</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="copyright">
+
+      <p>&copy; {time represent as :Y} {@yari.client.name}</p>   
+    </div>
+    {%template:yari/news/logout}
+  </div>
+  <!-- Place this tag in your head or just before your close body tag -->
+  <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+</body>
+</html>
+
+

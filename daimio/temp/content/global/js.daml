@@ -1,5 +1,6 @@
 <script src="js/snap.svg.js"></script>
 <script src="js/pizza.js"></script>
+<script src="js/jquery.easy-ticker.min.js"></script>
 <script src="{@SITE.path}/js/jDaimio.js"></script>
 {begin js | process escape}
   <script>
@@ -24,6 +25,38 @@
         });
       });
     });
+    
+    (function($) {
+    $.fn.equalHeights = function(minHeight, maxHeight) {
+    	tallest = (minHeight) ? minHeight : 0;
+    	this.each(function() {
+    		if($(this).height() > tallest) {
+    			tallest = $(this).height();
+    		}
+    	});
+    	if((maxHeight) && tallest > maxHeight) tallest = maxHeight;
+    	return this.each(function() {
+    		$(this).height(tallest).css("overflow","hidden");
+    		$(this).children('.price-highlight').css({'position' : 'absolute', 'bottom' : '0'})
+    	});
+    }
+    })(jQuery);
+
+
+    $('.item').equalHeights();
+    
+
+    $('#quotes').easyTicker({
+      direction: 'up',
+      	easing: 'swing',
+      	speed: 'slow',
+      	interval: 5000,
+      	height: 'auto',
+      	visible: 1,
+      	mousePause: 1,
+    });    
   });
   </script>
 {end js}
+
+

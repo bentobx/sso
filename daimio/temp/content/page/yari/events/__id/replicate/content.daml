@@ -1,0 +1,81 @@
+{begin layout | merge with (@event)}
+  
+
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Clone This Event</h4>
+      <p>Make a copy of this event and edit it independently. Useful for recurring meetups.</p>
+
+      <form method="post" class="form-horizontal" role="form" novalidate accept-charset="UTF-8" enctype="multipart/form-data">
+
+        {/ EVENT START DATE}
+
+        <div class="form-group">
+          <label for="event_start_date" class="form-label col-md-4">Date</label>
+          <div class="col-md-8">
+            <input type="text" name="dates[]" class="datepicker form-control" id="event_start_date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="event_start_date" class="form-label col-md-4">Date</label>
+          <div class="col-md-8">
+            <input type="text" name="dates[]" class="datepicker form-control" id="event_start_date">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="event_start_date" class="form-label col-md-4">Date</label>
+          <div class="col-md-8">
+            <input type="text" name="dates[]" class="datepicker form-control" id="event_start_date">
+          </div>
+        </div>
+
+        <hr>
+
+        <input type="hidden" name="event_id" value="{#id}">
+        <input type="hidden" name="start_date" value="{start_date.sec | time represent as "g:ia"}">
+        <input type="hidden" name="end_date" value="{end_date.sec | time represent as "g:ia"}">
+        <input type="hidden" name="organizer" value="{depot.organizer}">
+        <input type="hidden" name="description" value="{depot.description}">
+        <input type="hidden" name="summary" value="{depot.summary}">
+        {/ TODO don't need reg stuff anymore }
+        <input type="hidden" name="registration" value="{depot.registration.type}">
+        <input type="hidden" name="registrationlink" value="{depot.registration.link}">
+        <input type="hidden" name="tags" value="{tags | string join}">
+        <textarea name="commands" style="display:none">
+          {begin verbatim | escape}
+            {begin ham | foreach with #dates}
+              {event replicate id #event_id | > :new_event}          
+
+              {(value #start_date) | string join | > :event_start_date}
+              {(value #end_date) | string join | > :event_end_date}
+              {@new_event | event set_start_date value @event_start_date | event set_end_date value @event_end_date}
+              {exec set_event_depot event_id @new_event value #organizer path :organizer}
+              {exec set_event_depot event_id @new_event value #description path :description}
+              {exec set_event_depot event_id @new_event value #summary path :summary}
+              {exec set_event_depot event_id @new_event value {member find by_ids @MY.id | __.#1.depot.stripe_account_id} path :stripe_account_id}         
+              {/exec set_event_depot event_id @new_event value #registration path :registration.type}
+              {/exec set_event_depot event_id @new_event value #registrationlink path :registration.link}                
+              {tag set for @new_event in :events value {#tags | string split on ", "}}                      
+              {exec depot_push for #event_id in :events path :clones value @new_event}
+
+            {end ham}
+          {end verbatim}
+        </textarea>
+        <div class="row">
+          <div class="col-md-offset-4 col-md-8">
+            <button type="submit" class="btn btn-success">Replicate Event</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-md-6">
+
+      <h4>Cloned Events</h4>
+      <ul>{depot.clones | foreach string "<li><a href="{@SITE.path}/yari/events/{value}">{value}</a></li>"}
+      </ul>
+    </div>
+  </div>
+{end layout}

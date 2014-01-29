@@ -1,0 +1,14 @@
+<ul class="breadcrumb">
+  {begin home}
+    <li><a href="{@SITE.path}">Home</a> </li>    
+  {end home}
+  {begin yari | if {:yari | is in @PAGE.path} else $home}
+    <li><a href="{@SITE.path}/yari">Yari</a> </li>    
+  {end yari}
+  {begin pages | foreach with pages}
+    <li><a href="{@SITE.path}/{value.url}">{value.title}</a> </li>
+  {end pages}
+
+  <li class="active">{current}</li>    
+
+</ul>

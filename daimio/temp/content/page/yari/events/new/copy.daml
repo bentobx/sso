@@ -1,0 +1,71 @@
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Add New Event</h3>
+  </div>
+  <div class="modal-body">
+
+    {/ TITLE }
+    <div class="title form-group">
+      <label for="title" class="control-label">Title</label>
+      <input type="text" name="name" id="title" class="form-control input-lg" value="{name}">
+    </div>
+
+
+    {/ EVENT START DATE}
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="event_start_date" class="control-label">Start Day</label>
+          <input type="text" name="event_start_date" class="datepicker form-control" id="event_start_date" value="{start_date.sec | time represent as "m/d/Y" | else #date}" {depot.status | is like :publish | then :readonly}>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-6">
+          <label for="event_start_time" class="control-label">Start Time</label>
+          <input type="text" name="event_start_time" class=" form-control" value="{start_date.sec | time represent as "g:ia" | else "6:30 p.m."}" id="event_start_time" {depot.status | is like :publish | then :readonly}>
+        </div>
+      </div>
+    </div>
+
+
+    {/ EVENT END DATE}
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="event_end_date" class="control-label">End Day</label>
+          <input type="text" name="event_end_date" class="datepicker form-control" id="event_end_date" value="{end_date.sec | time represent as "m/d/Y" | else #date}" {depot.status | is like :publish | then :readonly}>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="event_end_time" class="control-label">End Time</label>
+          <input type="text" name="event_end_time" class="form-control" value="{end_date.sec | time represent as "g:ia" | else "9:30 p.m."}" id="event_end_time" {depot.status | is like :publish | then :readonly}>
+        </div>
+      </div>
+    </div>
+    <textarea name="commands" style="display:none">
+      {begin verbatim | process escape}
+        {(#event_start_date #event_start_time) | string join | > :event_start_date}
+        {(#event_end_date #event_end_time) | string join | > :event_end_date}
+        {event add | event set_name value #name | event set_start_date value @event_start_date | event set_end_date value @event_end_date | > :event_id}
+        {exec set_event_depot event_id @event_id value @MY.id path :organizer}
+    
+        {begin added | if @event_id}
+          {notice set value {* ( :message "<strong>Success!</strong> Your event has been saved as a draft!" :type :success)}}      
+          {page redirect to {"{@SITE.path}/yari/events/{@event_id}"}}
+        {end added}
+
+    
+      {end verbatim}
+    </textarea>
+
+    {/ <p>Status <strong>{depot.status}</strong>.</p> }
+
+      
+        
+    
+  </div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" type="submit">Submit</button>
+</div>

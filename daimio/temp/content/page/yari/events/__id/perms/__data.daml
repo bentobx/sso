@@ -1,0 +1,6 @@
+{%page/yari/events/__id/__data}
+{@event.pcache.edit | grep "user" | > :user_perms}
+{begin user_perms | if @user_perms}
+  {@user_perms | string transform old "user:" new "" | lens profile_find id | > :perm_peeps}
+{end user_perms}
+{lens profile_find options {* (:fields (:my.firstname :my.lastname))} | prune "{this._id | is like @MY.id}" | > :org_profiles}

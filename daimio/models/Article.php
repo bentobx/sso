@@ -35,12 +35,12 @@ class Article
 
   /** 
   * Find some events 
-  * @param string Event ids
-  * @param string Event name
-  * @param string Search a start date range -- accepts (:yesterday :tomorrow) or (1349504624 1349506624)
-  * @param string Event location
-  * @param string Event key -- needs to be URL-safe
-  * @param string Event organizer id
+  * @param string Article ids
+  * @param string Article name
+  * @param string Article date range -- accepts (:yesterday :tomorrow) or (1349504624 1349506624)
+  * @param string Article author by id
+  * @param string Article square -- accepts :draft, :pending, :deleted and :published
+  * @param string Article key -- returns only exact matches
   * @param string Supports sort, limit, skip, fields, nofields, count, i_can and attrs: {* (:limit 5 :skip 30 :sort {* (:name "-1")} :nofields (:pcache :scores))} or {* (:fields :name)} or {* (:count :true)} or {* (:tags :nifty)} or {* (:i_can :edit)}
   * @return string 
   * @key __world
@@ -54,7 +54,7 @@ class Article
       $query['name'] = new MongoRegex("/$by_name/i");
 		
 		if(isset($by_key)) 
-			$query['key'] = new MongoRegex("/$by_key/i");
+			$query['key'] = new MongoRegex("/^$by_key/i");
 			
 		if(isset($by_author)) 
 			$query['author'] = array('$in' => MongoLib::fix_ids($by_author));
@@ -236,8 +236,6 @@ class Article
   */ 
   static function submit_draft($id)
   {
-    ErrorLib::log_array(array("submit_draft $id", $id));
-    
     if(!$article = MongoLib::findOne_editable('articles', $id))
       return ErrorLib::set_error("That article is not within your domain");
       

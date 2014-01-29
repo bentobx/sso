@@ -1,0 +1,21 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-4">
+			{%sidebar}
+		</div>
+		<div class="col-md-8">
+			{// CONTENT //}
+			{begin block | if {:blogger | is in @MY.keychain} else "You don't have permission to view this draft article."}
+				<article>
+					{merge string %template/yari/news/single with @articles}
+					{begin no_articles | if {@articles | not}}
+						<p>There are no matching articles.</p>
+					{end no_articles}
+
+				</article>
+			{end block}
+		</div>
+	</div>
+</div>
+{end block}
+

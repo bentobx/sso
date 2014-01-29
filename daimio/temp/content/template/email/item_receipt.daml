@@ -1,0 +1,11 @@
+Hey, {#firstname}!
+
+This is email is a confirmation of your payment for {#item_name}.
+
+{begin paid | if #amount}Paid: ${#amount | string transform old "/(\d\d)$/" new ".$1"}{end paid}
+
+Thank you for your purchase and for supporting SSO.
+
+If you have any questions about this order, please do not hesitate to contact us at info@dmg.to. See you soon!
+
+-- Jennie & Cecily

@@ -1,0 +1,17 @@
+<script src="{@SITE.path}/js/jquery.dataTables.js"></script>
+<script src="{@SITE.path}/js/DT_bootstrap.js"></script>
+
+{begin js | process escape}
+  <script>
+  $(document).ready(function(){     
+    $('.table-data').dataTable( {
+      "sDom": "<'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-6'i><'col-md-6'p>>",
+      "sPaginationType": "bootstrap"
+    } );
+    $.extend( $.fn.dataTableExt.oStdClasses, {
+      "sWrapper": "dataTables_wrapper form-inline",
+    });
+  });
+
+</script>
+{end js} 

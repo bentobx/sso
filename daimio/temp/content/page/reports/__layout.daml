@@ -31,6 +31,7 @@
 
       // answers-in -> {__ | >$answers | __.#1} -> @answers-out
       answers-in -> cron-answers
+      
   </script>
 
 
@@ -82,15 +83,13 @@
      //    | filter block $user-filter
      //  --> if user-filter is empty, filter returns whole input }
 
-    {begin url | >url ||}https://chart.googleapis.com/chart?cht=bvs&chbh=a&chds=0,{
-          $list | math max
-        }&chd=t:{
-          range 14 | subtract 1 | map block "{$list.{__} | else 0}" | join on "," 
-        }&chs=400x200&chco=4D89F9&chxt=x,y{end url}
+    {begin chart | each data { $list | math max | divide value 400 | >multiplier
+                            || range 14 | minus 1 
+                             | map block "{$list.{__} | times _multiplier}" 
+                                   with {* (:multiplier _multiplier)}}}
+      <div style="height:20px; width:{_value}px; background-color: hsl({_key | times 27},100%, 50%);"></div>
+    {end chart}
 
-    <p></p>
-
-    <img src="{_url}" id="stuff" width="400" height="200">
   </div>
   
 
@@ -115,7 +114,7 @@
         | subtract $mintime | >$difftime 
         | divide by 10 | >$chunktime ||}
 
-        {"{__.time | subtract $mintime | divide by $chunktime | round}" | >$stackblock} {// derp}
+        {"{__.time | subtract $mintime | divide by {$chunktime | max 0.4} | round}" | >$stackblock} {// derp}
 
       projset
         {__ | switch (
@@ -270,58 +269,16 @@
       user-range-finder
         { $answers | count | divide by 3
         | times {__in | divide by {$user-range-size | add 1}} 
-        | math round 
+        | round 
         | times 3
         | >foo
         | $cron-answers.{_foo}.user}
         
       // THINK: why do we need _foo instead of just __ ?
 
-      answers-in -> user-range-home -> @user-range-home
+      @init -> user-range-home -> @user-range-home
       @user-range -> user-range-finder -> qpudraw
       cron-answers -> {$cron-answers.#-1.user} -> qpudraw -> @qpu-out
-  </script>
-
-
-
-  <h2>Question picker with simple graph</h2>
-  <select id="asciipicker"></select>
-  
-  <pre id="asciichart"></pre>
-
-  <script type="text/daml" class="spaceseeds">
-    outer
-      @asciipicker-in   dom-on-change asciipicker
-      @asciipicker-out  dom-set-html  asciipicker
-      @asciichart       dom-set-html
-
-      asciipicker-load
-        {__.*.question | unique | each block "<option>{_value}</option>"}
-
-      asciifilter
-        { __ | >q
-        | $answers 
-        | filter block "{__.question | eq _q}" 
-                 with   {* (:q _q)} }
-
-      asciidraw
-        <table>
-          {begin block | each data __in.#1.choices with {* (:answers __in)}}
-            <tr>
-              <td>{ _value }</td>
-              <td>{ {* (:key _key)} | >scope
-                  | _answers
-                  | filter block "{ __.answer | eq _key }" 
-                           with _scope 
-                  | each block "*"
-                         with _scope }</td>
-            </tr>
-          {end block}
-        </table>
-        
-      answers-in -> asciipicker-load -> @asciipicker-out
-      answers-in -> {__.#1.question} -> asciifilter -> asciidraw -> @asciichart
-      @asciipicker-in  -> asciifilter
   </script>
 
 
@@ -332,41 +289,33 @@
   <script type="text/daml" class="spaceseeds">
     outer
       @bardiv dom-set-html
+      
+      $bar-answers {}
+
+      baragg
+        { __ | group by :question
+        | map block "{ __ | group by :answer | >ag 
+                     | ({_ag.#1 | count} {_ag.#2 | count}) }"
+        | >$bar-answers
+        }
+        
+      baradd
+        { __ | >ship
+        | $bar-answers.{_ship.question}.{_ship.answer}
+        | add 1
+        | >$bar-answers.{_ship.question}.{_ship.answer}
+        }
 
       bardraw
-        {begin qs | each data {__in | group by :question}}
-          {__ | group by :answer | >agroup ||}
+        {begin qs | each data __in}
           <p>{_key}</p>
-          <div style="height:20px; width:{_agroup.#1 | count}px; background-color:pink">Yes</div>
-          <div style="height:20px; width:{_agroup.#2 | count}px; background-color:powderblue">No</div>
+          <div style="height:20px; width:{_value.#1}px; background-color:pink">Yes {_value.#1}</div>
+          <div style="height:20px; width:{_value.#2}px; background-color:powderblue">No {_value.#2}</div>
         {end qs}
 
-      answers-in -> bardraw -> @bardiv
+      answers-in -> baragg -> bardraw -> @bardiv
+      add-answer -> baradd -> bardraw
   </script>
-
-
-
-  <h2>A basic list of questions</h2>
-  <div id="basiclist"></div>
-  <script type="text/daml" class="spaceseeds">
-    outer
-      @basiclist dom-set-html
-
-      basiclist 
-        {begin choices | >choices ||}
-          <p>
-            {_value}: {_answers | filter block "{__.answer | eq _key}" with {* (:key _key)} | count}
-          </p>
-        {end choices}
-
-        { __ | group by :pq 
-        | each block "<h3>{_value.#1.question}</h3> 
-                      {_value.#1.choices | do _choices with {* (:answers _value)}}" 
-               with {* (:choices _choices)} }
-
-      answers-in -> basiclist -> @basiclist
-  </script>
-
 
 
   <h2>Compact Answers:</h2>
@@ -374,20 +323,29 @@
   <script type="text/daml" class="spaceseeds">
     outer
       @compact dom-set-text
+      $compact-answers {}
+
+      add-compact-answer
+        { __ | >ship
+        | cond ( 
+            $compact-answers.{_ship.user} "{  _ship.answer  | >$compact-answers.{_ship.user}.#0 }"
+            $compact-answers              "{ (_ship.answer) | >$compact-answers.{_ship.user}    }"
+            :outherwise                   "{* (_ship.user (_ship.answer)) | >$compact-answers   }"
+          )
+        | run with {* (:ship _ship)}
+        }
+
+      // TODO: make this work: 
+      // add-compact-answer {__.answer | >$compact-answers.{__in.user}.#0}
 
       compact 
-        {__ | group by :user | map block "{__.*.answer}"}}
+        {__ | group by :user | map block "{__.*.answer}" | >$compact-answers}
 
       answers-in -> compact -> @compact
+      add-answer -> add-compact-answer -> @compact
   </script>
 
 
-<!--
-  <h3>An Answer:</h3>
-  <div id="answers-out">...</div>
--->
-  
-  
 
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {      
@@ -400,6 +358,18 @@
   </script>
   {end js}
 
+
+<!--
+    // OK SO OK
+    // you should do some stuff:
+    // - adapt widgets to have an 'add answer' port on their subspace
+    // - make a frickin widget builder
+    // - and a template thing
+    // - and downports
+    // - and persistent data structures
+    // - and an editor
+    // - and a viz editor
+-->
 
 
 
@@ -469,36 +439,12 @@
 
       // GET ANSWERS
       
-      answers-in {__ | >$answers}
+      save-answers {__ | >$answers}
+      answers-in {__}
 
       @init -> {:answers} -> @local-read-req
       @local-read-in -> local-shuffle
-      local-shuffle.answers -> answers-in
-
-      // ADD AN ANSWER
-
-      add-answer 
-        { $answers 
-        | poke {__in} path "#0"
-        | >$answers
-        | * (:key :answers :value __) }
-
-      add-answer -> @local-write
-
-      // ADD SEVERAL ANSWERS
-
-      collect-answers
-        { $answers | count | >user-id
-        | $time | else {time stampwrap | __.stamp} | >time     / $time is pretty silly
-        | __in
-        | map block "{ _value
-                     | poke _user-id path :user 
-                     | poke _time path :time}"
-              with {* (:user-id _user-id :time _time)}
-        | do "{_value | >@send}"
-        }
-
-      collect-answers.send -> add-answer
+      local-shuffle.answers -> save-answers -> answers-in
 
       // GET BOTS
 
@@ -528,12 +474,12 @@
       @togglecode dom-on-click .toggle-code
       @togglecode -> {"code{__}" | run | * (:id __ :attr :display :value :block)} -> @tweaker
 
-      // RUN BOT
+      // REMOVE ANSWERS
+      
+      @clear-answers dom-on-submit
+      @clear-answers -> {* (:key :answers :value ())} -> @local-write
+      @clear-answers -> {()} -> save-answers
 
-      run-bot {__ | $bots.{__}.code | string trim | unquote | run}
-
-      @runbot dom-on-click .run
-      @runbot -> run-bot -> collect-answers
 
       // RUN LOTS O' BOTS
 
@@ -541,21 +487,53 @@
         { __ | >form
         | _form.end_date | minus _form.start_date | >diff
         | divide by {_form.iterations | minus 1 | max 1} 
-        | math round | >step
+        | round | >step
        || range _form.iterations start 0
-        | do "{ _value | times _step | add _start | >$time
-              | _active | do "{__ | >@run | process sleep for 50}"}"
-          with {* (:step _step :start _form.start_date :active _form.active)}
+        | do "{ _value | times _step | add _start | >time
+              | _bot-ids
+              | do  "{* (:bot-id __ :time _time) | >@run | wait}"
+                with {* (:time _time)} }"
+          with {* (:step _step :start _form.start_date :bot-ids _form.active)}
         }
 
       @activate-bots dom-on-submit
       @activate-bots -> bot-runner
       bot-runner.run -> run-bot
       
-      // REMOVE ANSWERS
+      // RUN BOT
+
+      run-bot 
+        { __.time | >time
+        | __in.bot-id | >id
+        | $bots.{_id}.code | string trim | unquote | run
+        | * (:answers __ :time _time :user-id {_time | times _time | add {math random max 10000}} )
+        }
+        
+      @runbot dom-on-click .run
+      @runbot -> {* ( :bot-id __ :time {time stampwrap | __.stamp} )} -> run-bot -> collect-answers
+
+      // ADD SEVERAL ANSWERS
+
+      collect-answers
+        { __.answers 
+        | map block "{ _value
+                     | poke _user-id path :user 
+                     | poke _time path :time}"
+              with {* (:user-id __in.user-id :time __in.time)}
+        | do "{_value | >@send}"
+        }
+
+      collect-answers.send -> add-answer
+
+      // ADD AN ANSWER
+
+      add-answer 
+        { __ 
+        | >$answers.#0
+        | __in}
+
+      add-answer -> {* (:key :answers :value $answers)} -> @local-write
       
-      @clear-answers dom-on-submit
-      @clear-answers -> {* (:key :answers :value ())} -> @local-write
   </script>
 
 
@@ -584,7 +562,6 @@
     D.import_port_flavour('local-write', {
       dir: 'out',
       outside_exit: function(ship) {
-        console.log(ship)
         localStorage.setItem(ship.key, JSON.stringify(ship.value))
       }
     })

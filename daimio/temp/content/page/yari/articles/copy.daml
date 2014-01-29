@@ -1,0 +1,65 @@
+{begin sorry}
+  <div class="alert alert-danger">Sorry, you are not an authorized blogger.</div>
+{end sorry}
+{begin layout | if {:blogger | is in @MY.keychain} else $sorry}
+  
+
+  <div class="page-header">
+    <h1>Articles <small class="pull-right"><a href="{@SITE.path}/yari/articles/new" class="pull-right btn btn-large btn-success">Write new article</a></small></h1> 
+
+  </div>
+
+
+  <div class="col-md-12">
+
+    <div class="row">
+
+      <div class="col-md-6"><p>Showing: All your posts <span class="tagged_with">
+        {begin tagheader | if {#3 | is like "tag"}}
+          tagged with <strong>{#4}</strong> (<a href="{@SITE.path}/yari/articles">clear</a>)
+        {end tagheader}
+      </span>
+    </p>
+  </div>
+  <div class="col-md-6">
+
+  </div>
+
+
+
+  <div id="article_list">
+    <table class="table table-striped table-condensed table-data">
+      <thead>
+        <tr>
+          <th class="title">Title</th>
+          <th class="date">Published Date</th>
+          <th class="status">Status</th>
+          <th class="tags">Tags</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {begin articles | merge with @articles}
+          <tr class="{#row | is like {id} | then "edited"}" id="row-{id}">
+            <td><a href="{@SITE.path}/yari/articles/{_id}">{name}</a></td>
+            <td>{pubdate.sec | time represent as "F j, Y"}</td>
+            <td><span class="{square}">{square}</span></td>
+            <td>
+              {if {tags.stripped_value} then "{merge string "<a href="{@SITE.path}/yari/articles/tag/{stripped_value}" class="badge">{value}</a>" with tags}" | else "&#8212;"}
+            </td>
+
+            <td>
+              <div class="btn-toolbar" style="margin-bottom: 9px">
+                <div class="btn-group">
+                  <a class="btn btn-default" href="{@SITE.path}/yari/articles/{_id}"><span class="glyphicon glyphicon-pencil"></span></a>
+                  <a class="btn btn-default" href="{@SITE.path}/news/{key | else _id}"><span class="glyphicon glyphicon-eye-open"></span></a>
+                </div>
+
+              </div>
+            </td>
+          </tr>
+        {end articles}
+      </tbody> 
+    </table>
+  </div>
+{end layout}

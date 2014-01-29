@@ -1,0 +1,1 @@
+{{* (:pages {* (:articles {* (:url :yari/events :title "Events")})} :current "<strong>{@event.name}</strong>")} | (__) | merge string %template/components/breadcrumbs}

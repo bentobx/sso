@@ -1,22 +1,19 @@
 <div class="row">
-  <div class="col-md-7">
-    <div id="lead">
-      <h3>1 in 5 of us will experience a mental illness</h3>
-      <p>Don't let silence or stigma define you. Your voice must be heard. <strong>What do Ontario's youth have to say about the state of mental health in the province?</strong></p>
+  <div class="col-md-6">
+    <div class="lead-block">
+      {%global/editable/markdown/lead_block | string markdown}
     </div>
   </div>
-  <div class="col-md-5">
-    <img src="{@SITE.path}/images/bucket_drummer_placeholder.gif" alt="" class="center-block img-responsive">  
+  <div class="col-md-6">
+      {%global/editable/html/video_feature}
   </div>
 </div>
 <div class="text-center center-block">
   <div id="cta">
-    <p class="lead">Amplify the signal by lending <em>your</em> voice!</p>
-    
-    <a href="#sound-off-step-1" class="btn btn-primary btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-comment"></span> Sound Off!</a>
+    <p class="lead">Your Voice Matters</p>    
+    <a href="#sound-off-step-1" class="btn btn-primary" data-toggle="modal" id="sound-off-button"><span class="glyphicon glyphicon-comment"></span> Sound Off Here!</a>
   </div>
   <div id="count">
-    <p class="lead">{@totals.#1.total} Sound Offs!</p>
+    <p class="lead">{@totals.#1.total | +: 250} Sound Offs!</p>
   </div>
-  
 </div>

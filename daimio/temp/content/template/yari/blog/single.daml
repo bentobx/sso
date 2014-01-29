@@ -1,0 +1,11 @@
+{lens profile_find id user_id options {* (:limit 1)} | > :user_profile | ""}
+<div class="post_body">
+	<h2>{title}</h2>
+	<p><strong>Posted on {publish_date | time represent as "F j, Y"}</strong> // by <a href="{@SITE.path}/members/profile/{user_id}">{@user_profile.#1.my.firstname} {@user_profile.#1.my.lastname}</a></p>
+
+	{body | string markdown}
+	<p>
+		<a href="http://twitter.com/share" class="twitter-share-button" data-text="Via @Audit_Tree: {title}" data-count="none">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+		<a href="{@SITE.path}/news/{id}/{publish_date | time represent as "d-m-Y"}/{title |  string url_encode}" class="pull-right">#</a>
+	</p>
+</div>

@@ -288,13 +288,13 @@ class Study
     // get the members
     foreach($answers as $answer)
       $users[] = $answer['user'];
-    if(!$members = MongoLib::findIn('members', $users))
+    if(!$members = MongoLib::findIn('profiles', $users))
       return ErrorLib::set_error("No valid members were detected");
     
     // all clear!
     
     foreach($answers as $answer) {
-      $composite = $members[$answer['user']]['depot'];
+      $composite = $members[$answer['user']]['my'];
 
       $composite['answer'] = $answer['input'];
       $composite['time'] = $answer['date']->sec;
@@ -310,6 +310,32 @@ class Study
     }
     
     return $composites;
+  }
+  
+  /** 
+  * Like compose_answers but with some extra munging
+  * @param array Study id
+  * @return array 
+  * @key __member
+  */ 
+  static function decompose_answers($id)
+  {
+    $answers = Study::compose_answers($id);
+    $new_list = array();
+    foreach($answers as $key => $answer) {
+      $new_list[$key]['time'] = date('r', $answer['time']);
+      $new_list[$key]['question'] = $answer['question'];
+      $new_list[$key]['answer'] = $answer['answer'] ? 'No' : 'Yes';
+      
+      $new_list[$key]['background'] = $answer['background'];
+      $new_list[$key]['birth_year'] = $answer['birth_year'];
+      $new_list[$key]['city']    = $answer['city'];
+      $new_list[$key]['lgbtq']   = $answer['lgbtq'];
+      $new_list[$key]['ontario'] = $answer['ontario'];
+      $new_list[$key]['pronoun'] = $answer['pronoun'];
+    }
+    
+    return $new_list;
   }
   
   

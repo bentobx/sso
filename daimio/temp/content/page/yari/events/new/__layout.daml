@@ -1,0 +1,8 @@
+{begin js | process escape}
+  <script>
+  $(document).ready(function(){
+    $('.datepicker').datepicker({autoclose: true})
+  })
+  </script>
+{end js}
+{%copy}

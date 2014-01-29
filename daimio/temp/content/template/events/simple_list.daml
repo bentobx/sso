@@ -1,0 +1,10 @@
+{ifelse ({{end_date | time represent as "Ymd"} | is in {start_date | time represent as "Ymd"}} "{"oneday" | > :type | ""}" :default "{"multiday" | > :type | ""}")}
+<div class="row"> 
+  <span class="col-xs-3">
+    <p class="date">{start_date | time represent as "n/j"}</p>
+  </span>
+  <span class="col-xs-9">
+    <p><a class="title" title="{name}" href="{@SITE.path}/events/{key | else _id}">{name}</a></p>
+  </span>
+
+</div> 

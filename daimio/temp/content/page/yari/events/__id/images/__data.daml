@@ -1,0 +1,2 @@
+{%page/yari/events/__id/__data}
+{stuff find by_type :event_header_image | > :events_stuff_images}

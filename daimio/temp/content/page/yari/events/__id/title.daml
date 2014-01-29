@@ -1,0 +1,9 @@
+<div class="page-header">
+  <h3>{@event.name}      
+    <small class="text-{@event.square}">{@event.square} <!--{@event.valid | then "Valid" else "Not Valid"}--></small>
+    {begin live_button | if {@event.square | is like :published}}
+      <a href="{@SITE.path}/events/{@event.key}" class="btn btn-default btn-small pull-right" target="_blank">View Live</a>
+    {end live_button}
+            
+  </h3>
+</div>

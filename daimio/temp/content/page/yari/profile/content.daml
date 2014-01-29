@@ -1,0 +1,112 @@
+
+    
+<!-- Profile editing modal
+  ================================================== -->
+  <form class="form-vertical" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+    <div class="well">
+      <div class="row">
+        <span class="col-md-3">
+
+          <div class="image form-group">
+
+
+            {begin placeholder}
+              <img src="//placehold.it/180x180/444444/eeeeee&text={@profile.my.firstname}" alt="{@profile.my.firstname}'s avatar">
+            {end placeholder}
+            {begin avatar | if @profile.files.my.avatar else $placeholder}
+              <img src="{@profile.files.my.avatar}" width="180" alt="{@profile.my.firstname}'s avatar">
+            {end avatar}
+
+            <label for="avatar" class="control-label">My Pic</label>
+            <input type="file" class="file" name="avatar" id="avatar">
+          </div>
+        </span>
+
+
+        <div class="form-group col-md-4">
+          <label class="control-label" for="textarea">A short bio</label>
+          <div class="controls">
+            <textarea class="col-md-4" id="bio" rows="5" name="my[bio]">{@profile.my.bio}</textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+    {/ PERSONAL }
+    <fieldset>
+      <div class="row">
+        <div class="col-md-8">
+          <legend>Personal</legend>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label class="control-label" for="firstname">First name</label>
+          <div class="controls">
+            <input type="text" class="col-md-4" id="firstname" name="my[firstname]" value="{@profile.my.firstname}">
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label class="control-label" for="lastname">Last name</label>
+          <div class="controls">
+            <input type="text" class="col-md-4" id="lastname" name="my[lastname]" value="{@profile.my.lastname}">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label class="control-label" for="email">Web site</label>
+          <div class="controls">
+            <input type="text" class="col-md-4" id="website" name="my[website]" value="{@profile.my.website}">
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label class="control-label" for="email">Twitter</label>
+          <div class="controls">
+
+            <div class="input-group">
+              <span class="input-group-addon">@</span><input type="text" class="" id="twitter" name="my[social.twitter]" value="{@profile.my.social.twitter}">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </fieldset>
+    <div class="form-group">
+      <h4>Areas of expertise</h4>
+      <div class="controls">
+        <select data-placeholder="Start typing..." multiple="multiple" tabindex="3" class="skills col-md-8" name="my[skills][]" id="skills">
+          {begin skills | foreach with @skills as :skill_value and :skill_key} 
+            <optgroup label="{skill_value.name}">
+              {begin list | foreach with skill_value.values}
+                <option value="{value}" {value | is in @profile.my.skills | then "selected"}>{value}</option>
+              {end list}
+            </optgroup>
+          {end skills}
+        </select>
+      </div>
+
+
+      {ifelse (
+        {@profile.my.trialweekstart | time represent | logic less than {time represent}} $trialstarted
+        :default $trialoptions
+      )}
+      <textarea name="commands" style="display:none">
+        {begin verbatim | process escape}
+          {begin ham | foreach with #my}
+            {my set for @MY.id in :profiles path key value value}
+          {end ham}
+          {tag set for @MY.id in :profiles value {#interests | string split on ", "}}
+          {exec upload_file thing (:profiles @MY.id) path :my.avatar file :avatar}
+          {notice set value {* (:message "<strong>Success!</strong> Your changes have been saved." :type :success)}} 
+        {end verbatim}     
+      </textarea>
+      <input type="submit" class="btn btn-primary btn-lg" value="Save changes">
+    </div>
+
+
+  </form>

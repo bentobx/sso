@@ -1,0 +1,2 @@
+{ event find options {* (:sort {* (:start_date "-1")}) :fields (:organizers :end_date :start_date :square :depot :name :my))}
+  | > :all_events | ""}

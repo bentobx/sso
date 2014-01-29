@@ -1,0 +1,1 @@
+{article find by_ids #id | __.#1 | > :article}

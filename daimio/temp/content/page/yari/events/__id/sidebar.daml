@@ -1,0 +1,29 @@
+<ul class="nav nav-stacked nav-pills">
+  <li class="{:active | if {#4 | not}}"><a href="{@SITE.path}/yari/events/{#id}">Overview</a></li>
+  <li class="{:active | if {:tickets | is in @PAGE.path}}"><a href="{@SITE.path}/yari/events/{#id}/tickets">Tickets
+    {begin ttypes_count}
+      <span class="glyphicon glyphicon-check"></span>    
+      <small class="pull-right">{@event.ttypes | collection count} types</small>
+    {end ttypes_count}
+    {begin warning | if {@event.ttypes | not} else $ttypes_count}
+      <span class="glyphicon glyphicon-exclamation-sign"></span>
+    {end warning}
+  </a>
+</li>  
+<li class="{:active | if {:images | is in @PAGE.path}}">
+  <a href="{@SITE.path}/yari/events/{#id}/images">Image
+    {begin image_good}
+      <span class="glyphicon glyphicon-check"></span>    
+    {end image_good}
+    {begin warning | if {@event.depot.header_image | not} else $image_good}
+      <span class="glyphicon glyphicon-exclamation-sign"></span>
+    {end warning}
+  </a>
+</li>
+<li class="{:active | if {:attendees | is in @PAGE.path}}">
+  <a href="{@SITE.path}/yari/events/{#id}/attendees">Attendees
+    <small class="pull-right">{lens ticket_find_by_event event #id | collection count}</small>
+  </a>
+</li>
+<li class="{:active | if {:replicate | is in @PAGE.path}}"><a href="{@SITE.path}/yari/events/{#id}/replicate">Clone</a></li>
+</ul>

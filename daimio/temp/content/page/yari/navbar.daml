@@ -13,7 +13,7 @@
       {begin admin | if {:admin | is in @MY.keychain}}
         <li><a href="{@SITE.path}/yari/events"><i class="glyphicon glyphicon-calendar"></i> Events</a></li>
         <li><a href="{@SITE.path}/yari/pages"><i class="glyphicon glyphicon-align-left"></i> Content</a></li>
-        <li><a href="{@SITE.path}/yari/data"><i class="glyphicon glyphicon-comment"></i> Content</a></li>
+        <li><a href="{@SITE.path}/yari/data"><i class="glyphicon glyphicon-comment"></i> Data</a></li>
       {end admin}
 
     </ul>

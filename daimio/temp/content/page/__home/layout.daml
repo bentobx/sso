@@ -26,6 +26,7 @@
         {begin post | merge with @articles}
           {lens profile_find id author | __.#1 | > :author | ""}
           <h3><a title="{title}" class="" href="{@SITE.path}/news/{key}">{name}</a></h3>
+          <p class="published"><span>{pubdate.sec | time represent as "F j, Y"}</span></p>
           {depot.summary | string markdown}
           <a title="{title}" class="more" href="{@SITE.path}/news/{key}">Read more <span class="glyphicon glyphicon-chevron-right"></span></a>
           <hr>
